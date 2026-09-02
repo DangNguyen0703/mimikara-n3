@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useVocabulary } from '@/hooks/useVocabulary';
 import { useBookmarks } from '@/hooks/useBookmarks';
 import ImportTxt from '@/components/ImportTxt';
+import ImportedListModal from '@/components/ImportedListModal';
 import { sounds } from '@/utils/sound';
 
 const MODES = [
@@ -70,9 +71,10 @@ const MODES = [
 ];
 
 export default function HomePage() {
-  const { allWords, limit, setLimit } = useVocabulary();
+  const { allWords, importedWords, limit, setLimit } = useVocabulary();
   const { starred, wrong, forgettable } = useBookmarks();
   const [showImport, setShowImport] = useState(false);
+  const [showImportedList, setShowImportedList] = useState(false);
   const [soundActive, setSoundActive] = useState(true);
   const [mounted, setMounted] = useState(false);
 
@@ -115,11 +117,11 @@ export default function HomePage() {
               </span>
             </div>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.75rem', marginTop: 3 }}>
-              {mounted ? `${totalWords} từ vựng chuẩn` : '...'} • 耳から覚える
+              {mounted ? `${totalWords} từ vựng` : '...'} • 耳から覚える
             </p>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <button
               onClick={toggleSound}
               style={{
@@ -140,15 +142,30 @@ export default function HomePage() {
               {soundActive ? '🔊' : '🔇'}
             </button>
 
+            {/* View Imported List Button */}
+            {mounted && importedWords.length > 0 ? (
+              <button
+                className="btn btn-secondary"
+                onClick={() => {
+                  sounds.playTap();
+                  setShowImportedList(true);
+                }}
+                style={{ fontSize: '0.78rem', padding: '8px 12px', borderRadius: '9999px', borderColor: 'rgba(139, 92, 246, 0.4)' }}
+                title="Xem danh sách từ đã import"
+              >
+                📂 {importedWords.length} từ
+              </button>
+            ) : null}
+
             <button
-              className="btn btn-secondary"
+              className="btn btn-primary"
               onClick={() => {
                 sounds.playTap();
                 setShowImport(true);
               }}
-              style={{ fontSize: '0.8rem', padding: '8px 14px', borderRadius: '9999px' }}
+              style={{ fontSize: '0.78rem', padding: '8px 12px', borderRadius: '9999px' }}
             >
-              📥 Import .txt
+              📥 + Import
             </button>
           </div>
         </div>
@@ -282,7 +299,18 @@ export default function HomePage() {
         </div>
       </div>
 
+      {/* Modals */}
       {showImport && <ImportTxt onClose={() => setShowImport(false)} />}
+      
+      {showImportedList && (
+        <ImportedListModal
+          onClose={() => setShowImportedList(false)}
+          onOpenImportNew={() => {
+            setShowImportedList(false);
+            setShowImport(true);
+          }}
+        />
+      )}
     </main>
   );
 }

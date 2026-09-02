@@ -35,7 +35,22 @@ export function useVocabulary() {
     setImportedWords(prev => [...prev, ...newWords]);
   };
 
+  const deleteImportedWord = (id: number) => {
+    setImportedWords(prev => prev.filter(w => w.id !== id));
+  };
+
   const clearImported = () => setImportedWords([]);
 
-  return { allWords, studyWords, units, limit, setLimit, lookupWord, addImportedWords, clearImported };
+  return {
+    allWords,
+    studyWords,
+    importedWords,
+    units,
+    limit,
+    setLimit,
+    lookupWord,
+    addImportedWords,
+    deleteImportedWord,
+    clearImported,
+  };
 }
