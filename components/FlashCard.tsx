@@ -12,11 +12,18 @@ interface FlashCardProps {
 
 export default function FlashCard({ words }: FlashCardProps) {
   const [savedIndex, setSavedIndex] = useLocalStorage<number>('last_flashcard_index', 0);
+  const [hideKanji, setHideKanji] = useLocalStorage<boolean>('flashcard_hide_kanji', false);
+  const [hideHiragana, setHideHiragana] = useLocalStorage<boolean>('flashcard_hide_hiragana', false);
+
   const [index, setIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const [showJumpModal, setShowJumpModal] = useState(false);
   const [jumpInput, setJumpInput] = useState('');
+
+  // Local temporary reveal states for current card
+  const [revealedKanji, setRevealedKanji] = useState(false);
+  const [revealedHiragana, setRevealedHiragana] = useState(false);
 
   const touchStartX = useRef(0);
   const touchStartY = useRef(0);
@@ -33,6 +40,12 @@ export default function FlashCard({ words }: FlashCardProps) {
   }, [savedIndex, total]);
 
   const current = words[index] || words[0];
+
+  // Reset temporary reveals when word changes
+  useEffect(() => {
+    setRevealedKanji(false);
+    setRevealedHiragana(false);
+  }, [index]);
 
   const handleFlip = useCallback(() => {
     sounds.playFlip();
@@ -122,11 +135,14 @@ export default function FlashCard({ words }: FlashCardProps) {
     }, new Map<string, number>()).entries()
   );
 
+  const isKanjiShown = !hideKanji || revealedKanji;
+  const isHiraganaShown = !hideHiragana || revealedHiragana;
+
   if (!current) return null;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-      {/* Top Header: Interactive Number Pill (Click to Jump) & Unit */}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+      {/* Top Header: Quick Jump & Unit */}
       <div>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8, alignItems: 'center' }}>
           <button
@@ -173,6 +189,63 @@ export default function FlashCard({ words }: FlashCardProps) {
         </div>
       </div>
 
+      {/* Hide/Show Controls Toolbar */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        gap: 8,
+      }}>
+        <button
+          onClick={() => {
+            sounds.playTap();
+            setHideKanji(h => !h);
+          }}
+          style={{
+            padding: '7px 10px',
+            borderRadius: '12px',
+            border: `1px solid ${hideKanji ? 'rgba(139, 92, 246, 0.4)' : 'var(--border)'}`,
+            background: hideKanji ? 'rgba(139, 92, 246, 0.2)' : 'rgba(255, 255, 255, 0.04)',
+            color: hideKanji ? 'var(--accent-light)' : 'var(--text-secondary)',
+            fontSize: '0.76rem',
+            fontWeight: 700,
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 6,
+            transition: 'all 0.2s',
+          }}
+        >
+          <span>{hideKanji ? '🙈' : '👁️'}</span>
+          <span>{hideKanji ? 'Đang ẩn Kanji' : 'Hiện Kanji'}</span>
+        </button>
+
+        <button
+          onClick={() => {
+            sounds.playTap();
+            setHideHiragana(h => !h);
+          }}
+          style={{
+            padding: '7px 10px',
+            borderRadius: '12px',
+            border: `1px solid ${hideHiragana ? 'rgba(56, 189, 248, 0.4)' : 'var(--border)'}`,
+            background: hideHiragana ? 'rgba(56, 189, 248, 0.2)' : 'rgba(255, 255, 255, 0.04)',
+            color: hideHiragana ? 'var(--sky)' : 'var(--text-secondary)',
+            fontSize: '0.76rem',
+            fontWeight: 700,
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 6,
+            transition: 'all 0.2s',
+          }}
+        >
+          <span>{hideHiragana ? '🙈' : '👁️'}</span>
+          <span>{hideHiragana ? 'Đang ẩn Hiragana' : 'Hiện Hiragana'}</span>
+        </button>
+      </div>
+
       {/* 3D Flip Card Container */}
       <div
         className="perspective-container"
@@ -192,7 +265,7 @@ export default function FlashCard({ words }: FlashCardProps) {
         }}
       >
         <div className={`flip-card-inner ${flipped ? 'is-flipped' : ''}`}>
-          {/* Card Front (Kanji Only + Speaker) */}
+          {/* Card Front (Kanji + Hiragana + Speaker) */}
           <div
             className="flip-card-face glass-card"
             style={{
@@ -225,28 +298,110 @@ export default function FlashCard({ words }: FlashCardProps) {
               </button>
             </div>
 
-            {/* Kanji in the Middle */}
-            <div style={{ textAlign: 'center', margin: 'auto 0' }}>
-              <p className="jp-text" style={{
-                fontSize: 'clamp(3.2rem, 13vw, 4.8rem)',
-                fontWeight: 900,
-                color: '#ffffff',
-                lineHeight: 1.15,
-                letterSpacing: '0.02em',
-                textShadow: '0 4px 24px rgba(139, 92, 246, 0.35)',
-              }}>
-                {current.kanji}
-              </p>
+            {/* Kanji & Hiragana in the Middle */}
+            <div style={{ textAlign: 'center', margin: 'auto 0', width: '100%' }}>
+              {/* Kanji */}
+              {isKanjiShown ? (
+                <p
+                  className="jp-text animate-fade-in"
+                  style={{
+                    fontSize: 'clamp(2.8rem, 12vw, 4.2rem)',
+                    fontWeight: 900,
+                    color: '#ffffff',
+                    lineHeight: 1.15,
+                    letterSpacing: '0.02em',
+                    textShadow: '0 4px 24px rgba(139, 92, 246, 0.35)',
+                    cursor: hideKanji ? 'pointer' : 'default',
+                  }}
+                  onClick={(e) => {
+                    if (hideKanji) {
+                      e.stopPropagation();
+                      setRevealedKanji(false);
+                    }
+                  }}
+                >
+                  {current.kanji}
+                </p>
+              ) : (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    sounds.playTap();
+                    setRevealedKanji(true);
+                  }}
+                  style={{
+                    background: 'rgba(139, 92, 246, 0.12)',
+                    border: '1.5px dashed rgba(139, 92, 246, 0.4)',
+                    borderRadius: '16px',
+                    padding: '16px 24px',
+                    color: 'var(--accent-light)',
+                    fontSize: '1rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    margin: '8px auto',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 8,
+                  }}
+                >
+                  <span>🙈</span> Chạm để hiện Kanji
+                </button>
+              )}
+
+              {/* Hiragana Reading on Front */}
+              {isHiraganaShown ? (
+                <p
+                  className="jp-text animate-fade-in"
+                  style={{
+                    fontSize: '1.3rem',
+                    fontWeight: 700,
+                    color: 'var(--accent-light)',
+                    marginTop: 8,
+                    cursor: hideHiragana ? 'pointer' : 'default',
+                  }}
+                  onClick={(e) => {
+                    if (hideHiragana) {
+                      e.stopPropagation();
+                      setRevealedHiragana(false);
+                    }
+                  }}
+                >
+                  {current.hiragana}
+                </p>
+              ) : (
+                <div style={{ marginTop: 10 }}>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      sounds.playTap();
+                      setRevealedHiragana(true);
+                    }}
+                    style={{
+                      background: 'rgba(56, 189, 248, 0.1)',
+                      border: '1px dashed rgba(56, 189, 248, 0.35)',
+                      borderRadius: '9999px',
+                      padding: '5px 14px',
+                      color: 'var(--sky)',
+                      fontSize: '0.8rem',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    🙈 Chạm để hiện Hiragana
+                  </button>
+                </div>
+              )}
+
               <p style={{
-                fontSize: '0.82rem',
+                fontSize: '0.8rem',
                 color: 'var(--text-muted)',
-                marginTop: 14,
+                marginTop: 16,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: 6,
               }}>
-                <span>💡</span> Nhấn để xem cách đọc & nghĩa
+                <span>💡</span> Lật thẻ để xem nghĩa & ví dụ
               </p>
             </div>
 
@@ -283,7 +438,7 @@ export default function FlashCard({ words }: FlashCardProps) {
           onClick={handleFlip}
           style={{ padding: '14px 12px' }}
         >
-          {flipped ? '🔄 Xem Kanji' : '✨ Xem nghĩa'}
+          {flipped ? '🔄 Xem mặt trước' : '✨ Xem nghĩa & ví dụ'}
         </button>
         <button className="btn btn-secondary" onClick={() => go(1)} style={{ padding: '14px 10px' }}>
           Tiếp →
