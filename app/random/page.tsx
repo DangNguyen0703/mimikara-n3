@@ -1,6 +1,7 @@
 'use client';
 import { useState, useCallback, useEffect } from 'react';
 import { useVocabulary } from '@/hooks/useVocabulary';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
 import PageWrapper from '@/components/PageWrapper';
 import VocabCard from '@/components/VocabCard';
 import { VocabWord } from '@/types/vocabulary';
@@ -18,6 +19,11 @@ export default function RandomPage() {
   const [expanded, setExpanded] = useState(true);
   const [animating, setAnimating] = useState(false);
 
+  // Toggle hide/show states
+  const [hideKanji, setHideKanji] = useLocalStorage<boolean>('hide_kanji_random', false);
+  const [hideHiragana, setHideHiragana] = useLocalStorage<boolean>('hide_hiragana_random', false);
+  const [hideMeaning, setHideMeaning] = useLocalStorage<boolean>('hide_meaning_random', false);
+
   const getNew = useCallback(() => {
     if (studyWords.length === 0) return;
     sounds.playTap();
@@ -27,7 +33,7 @@ export default function RandomPage() {
       setCurrent(next);
       setHistory(h => [next, ...h.filter(item => item.id !== next.id)].slice(0, 15));
       setAnimating(false);
-    }, 140);
+    }, 180);
   }, [studyWords, current]);
 
   useEffect(() => {
@@ -51,16 +57,110 @@ export default function RandomPage() {
   return (
     <PageWrapper title="🎲 Luyện ngẫu nhiên" subtitle={`${studyWords.length} từ vựng`}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        
+        {/* Toggle Hide/Show Bar */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(3, 1fr)',
+          gap: 6,
+          background: 'rgba(255, 255, 255, 0.03)',
+          padding: 6,
+          borderRadius: '16px',
+          border: '1px solid var(--border)',
+        }}>
+          <button
+            onClick={() => {
+              sounds.playTap();
+              setHideKanji(h => !h);
+            }}
+            style={{
+              padding: '8px 4px',
+              borderRadius: '10px',
+              border: 'none',
+              background: hideKanji ? 'rgba(139, 92, 246, 0.2)' : 'rgba(255, 255, 255, 0.06)',
+              color: hideKanji ? 'var(--accent-light)' : 'var(--text-secondary)',
+              fontSize: '0.75rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 4,
+              transition: 'all 0.2s',
+            }}
+          >
+            <span>{hideKanji ? '🙈' : '👁️'}</span>
+            <span>{hideKanji ? 'Ẩn Kanji' : 'Kanji'}</span>
+          </button>
+
+          <button
+            onClick={() => {
+              sounds.playTap();
+              setHideHiragana(h => !h);
+            }}
+            style={{
+              padding: '8px 4px',
+              borderRadius: '10px',
+              border: 'none',
+              background: hideHiragana ? 'rgba(56, 189, 248, 0.2)' : 'rgba(255, 255, 255, 0.06)',
+              color: hideHiragana ? 'var(--sky)' : 'var(--text-secondary)',
+              fontSize: '0.75rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 4,
+              transition: 'all 0.2s',
+            }}
+          >
+            <span>{hideHiragana ? '🙈' : '👁️'}</span>
+            <span>{hideHiragana ? 'Ẩn Hira' : 'Hiragana'}</span>
+          </button>
+
+          <button
+            onClick={() => {
+              sounds.playTap();
+              setHideMeaning(h => !h);
+            }}
+            style={{
+              padding: '8px 4px',
+              borderRadius: '10px',
+              border: 'none',
+              background: hideMeaning ? 'rgba(16, 185, 129, 0.2)' : 'rgba(255, 255, 255, 0.06)',
+              color: hideMeaning ? 'var(--emerald)' : 'var(--text-secondary)',
+              fontSize: '0.75rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 4,
+              transition: 'all 0.2s',
+            }}
+          >
+            <span>{hideMeaning ? '🙈' : '👁️'}</span>
+            <span>{hideMeaning ? 'Ẩn Nghĩa' : 'Nghĩa TV'}</span>
+          </button>
+        </div>
+
+        {/* Word Card with optional hidden fields */}
         <div
           className="glass-card"
           style={{
             padding: '22px 20px',
             opacity: animating ? 0.2 : 1,
             transform: animating ? 'scale(0.96)' : 'scale(1)',
-            transition: 'all 0.16s cubic-bezier(0.16, 1, 0.3, 1)',
+            transition: 'all 0.18s cubic-bezier(0.16, 1, 0.3, 1)',
           }}
         >
-          <VocabCard word={current} showFull={expanded} />
+          <VocabCard
+            word={current}
+            showFull={expanded}
+            hideKanji={hideKanji}
+            hideHiragana={hideHiragana}
+            hideMeaning={hideMeaning}
+          />
           <button
             className="btn btn-ghost"
             style={{ width: '100%', marginTop: 12, fontSize: '0.82rem', color: 'var(--text-muted)' }}
@@ -81,6 +181,7 @@ export default function RandomPage() {
           🎲 Đổi từ ngẫu nhiên khác
         </button>
 
+        {/* Recent History */}
         {history.length > 1 && (
           <div style={{ marginTop: 8 }}>
             <p style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.04em' }}>

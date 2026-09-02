@@ -15,6 +15,8 @@ export default function FlashCard({ words }: FlashCardProps) {
   const [isAnimating, setIsAnimating] = useState(false);
   const touchStartX = useRef(0);
   const touchStartY = useRef(0);
+  const touchStartTime = useRef(0);
+  const isSwiping = useRef(false);
 
   const current = words[index];
   const total = words.length;
@@ -32,7 +34,7 @@ export default function FlashCard({ words }: FlashCardProps) {
       setIndex(prev => (prev + direction + total) % total);
       setFlipped(false);
       setIsAnimating(false);
-    }, 180);
+    }, 240);
   }, [isAnimating, total]);
 
   // Keyboard navigation shortcuts
@@ -56,15 +58,28 @@ export default function FlashCard({ words }: FlashCardProps) {
   const handleTouchStart = (e: TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
     touchStartY.current = e.touches[0].clientY;
+    touchStartTime.current = Date.now();
+    isSwiping.current = false;
+  };
+
+  const handleTouchMove = (e: TouchEvent) => {
+    const dx = Math.abs(e.touches[0].clientX - touchStartX.current);
+    const dy = Math.abs(e.touches[0].clientY - touchStartY.current);
+    if (dx > 25 && dx > dy) {
+      isSwiping.current = true;
+    }
   };
 
   const handleTouchEnd = (e: TouchEvent) => {
     const dx = e.changedTouches[0].clientX - touchStartX.current;
     const dy = Math.abs(e.changedTouches[0].clientY - touchStartY.current);
-    if (dy > 60) return; // vertical scroll gesture
-    if (Math.abs(dx) > 45) {
+    const dt = Date.now() - touchStartTime.current;
+
+    // If it's a deliberate horizontal swipe on mobile (moved > 70px in reasonable time and horizontal > vertical)
+    if (Math.abs(dx) > 70 && dy < 60 && dt < 600) {
       go(dx < 0 ? 1 : -1);
-    } else {
+    } else if (Math.abs(dx) < 15 && dy < 15) {
+      // Clean tap to flip (avoid double triggers)
       handleFlip();
     }
   };
@@ -99,16 +114,22 @@ export default function FlashCard({ words }: FlashCardProps) {
       <div
         className="perspective-container"
         style={{
-          height: 'clamp(380px, 56vh, 480px)',
+          height: 'clamp(390px, 56vh, 490px)',
           cursor: 'pointer',
           touchAction: 'pan-y',
-          opacity: isAnimating ? 0.3 : 1,
-          transform: isAnimating ? 'scale(0.96)' : 'scale(1)',
-          transition: 'opacity 0.18s, transform 0.18s cubic-bezier(0.16, 1, 0.3, 1)',
+          opacity: isAnimating ? 0.35 : 1,
+          transform: isAnimating ? 'scale(0.97)' : 'scale(1)',
+          transition: 'opacity 0.24s, transform 0.24s cubic-bezier(0.16, 1, 0.3, 1)',
         }}
         onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
-        onClick={handleFlip}
+        onClick={(e) => {
+          // If not from a mobile touch gesture, allow click
+          if (touchStartTime.current === 0) {
+            handleFlip();
+          }
+        }}
       >
         <div className={`flip-card-inner ${flipped ? 'is-flipped' : ''}`}>
           {/* Card Front (Kanji Only + Speaker) */}
@@ -171,7 +192,7 @@ export default function FlashCard({ words }: FlashCardProps) {
 
             {/* Bottom Hint */}
             <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-              <span>← Vuốt trái / phải</span>
+              <span>← Vuốt để chuyển từ</span>
               <span>Phím cách: Lật ␣</span>
             </div>
           </div>

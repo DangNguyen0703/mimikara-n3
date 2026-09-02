@@ -1,4 +1,5 @@
 'use client';
+import { useState, useEffect } from 'react';
 import { VocabWord } from '@/types/vocabulary';
 import { useBookmarks } from '@/hooks/useBookmarks';
 import { useVocabulary } from '@/hooks/useVocabulary';
@@ -8,11 +9,32 @@ import { sounds } from '@/utils/sound';
 interface VocabCardProps {
   word: VocabWord;
   showFull?: boolean;
+  hideKanji?: boolean;
+  hideHiragana?: boolean;
+  hideMeaning?: boolean;
 }
 
-export default function VocabCard({ word, showFull = true }: VocabCardProps) {
+export default function VocabCard({
+  word,
+  showFull = true,
+  hideKanji = false,
+  hideHiragana = false,
+  hideMeaning = false,
+}: VocabCardProps) {
   const { toggle, has } = useBookmarks();
   const { lookupWord } = useVocabulary();
+
+  // Local reveal states when user taps on a hidden item
+  const [revealedKanji, setRevealedKanji] = useState(false);
+  const [revealedHiragana, setRevealedHiragana] = useState(false);
+  const [revealedMeaning, setRevealedMeaning] = useState(false);
+
+  // Reset revealed states when word changes
+  useEffect(() => {
+    setRevealedKanji(false);
+    setRevealedHiragana(false);
+    setRevealedMeaning(false);
+  }, [word.id]);
 
   const handleSpeech = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -25,6 +47,10 @@ export default function VocabCard({ word, showFull = true }: VocabCardProps) {
     if (found) return `${found.hiragana} - ${found.meaning}`;
     return kanji;
   };
+
+  const isKanjiVisible = !hideKanji || revealedKanji;
+  const isHiraganaVisible = !hideHiragana || revealedHiragana;
+  const isMeaningVisible = !hideMeaning || revealedMeaning;
 
   return (
     <div className="animate-fade-in" style={{ width: '100%' }}>
@@ -52,52 +78,141 @@ export default function VocabCard({ word, showFull = true }: VocabCardProps) {
 
       {/* Main Kanji & Reading */}
       <div style={{ textAlign: 'center', marginBottom: 14 }}>
-        <p className="jp-text" style={{
-          fontSize: 'clamp(2.6rem, 11vw, 3.8rem)',
-          fontWeight: 900,
-          color: '#ffffff',
-          lineHeight: 1.15,
-          letterSpacing: '0.02em',
-          textShadow: '0 2px 16px rgba(139, 92, 246, 0.25)',
-        }}>
-          {word.kanji}
-        </p>
-        <p className="jp-text" style={{
-          fontSize: '1.2rem',
-          fontWeight: 600,
-          color: 'var(--accent-light)',
-          marginTop: 6,
-        }}>
-          {word.hiragana}
-        </p>
+        {isKanjiVisible ? (
+          <p
+            className="jp-text animate-fade-in"
+            style={{
+              fontSize: 'clamp(2.6rem, 11vw, 3.8rem)',
+              fontWeight: 900,
+              color: '#ffffff',
+              lineHeight: 1.15,
+              letterSpacing: '0.02em',
+              textShadow: '0 2px 16px rgba(139, 92, 246, 0.25)',
+              cursor: hideKanji ? 'pointer' : 'default',
+            }}
+            onClick={() => hideKanji && setRevealedKanji(false)}
+          >
+            {word.kanji}
+          </p>
+        ) : (
+          <button
+            onClick={() => {
+              sounds.playTap();
+              setRevealedKanji(true);
+            }}
+            style={{
+              background: 'rgba(139, 92, 246, 0.1)',
+              border: '1.5px dashed rgba(139, 92, 246, 0.4)',
+              borderRadius: '16px',
+              padding: '16px 24px',
+              color: 'var(--accent-light)',
+              fontSize: '1.1rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              margin: '8px auto',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              transition: 'all 0.2s',
+            }}
+          >
+            <span>🙈</span> Chạm để hiện Kanji
+          </button>
+        )}
+
+        {isHiraganaVisible ? (
+          <p
+            className="jp-text animate-fade-in"
+            style={{
+              fontSize: '1.2rem',
+              fontWeight: 600,
+              color: 'var(--accent-light)',
+              marginTop: 6,
+              cursor: hideHiragana ? 'pointer' : 'default',
+            }}
+            onClick={() => hideHiragana && setRevealedHiragana(false)}
+          >
+            {word.hiragana}
+          </p>
+        ) : (
+          <div style={{ marginTop: 8 }}>
+            <button
+              onClick={() => {
+                sounds.playTap();
+                setRevealedHiragana(true);
+              }}
+              style={{
+                background: 'rgba(255, 255, 255, 0.05)',
+                border: '1px dashed var(--border)',
+                borderRadius: '9999px',
+                padding: '4px 14px',
+                color: 'var(--text-muted)',
+                fontSize: '0.8rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
+            >
+              👁️ Hiện Hiragana
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Meaning Banner */}
-      <div style={{
-        background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.18), rgba(56, 189, 248, 0.08))',
-        border: '1px solid rgba(139, 92, 246, 0.3)',
-        borderRadius: '12px',
-        padding: '12px 16px',
-        marginBottom: 14,
-        textAlign: 'center',
-        boxShadow: '0 4px 20px -4px rgba(139, 92, 246, 0.15)',
-      }}>
-        <p style={{ fontSize: '1.05rem', fontWeight: 700, color: '#f8fafc' }}>
-          {word.meaning}
-        </p>
-        {word.hanViet && (
-          <p style={{
-            fontSize: '0.75rem',
-            fontWeight: 600,
-            color: 'var(--accent-light)',
-            marginTop: 3,
-            letterSpacing: '0.06em',
-            textTransform: 'uppercase',
-          }}>
-            Hán Việt: {word.hanViet}
+      {isMeaningVisible ? (
+        <div
+          className="animate-fade-in"
+          style={{
+            background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.18), rgba(56, 189, 248, 0.08))',
+            border: '1px solid rgba(139, 92, 246, 0.3)',
+            borderRadius: '12px',
+            padding: '12px 16px',
+            marginBottom: 14,
+            textAlign: 'center',
+            boxShadow: '0 4px 20px -4px rgba(139, 92, 246, 0.15)',
+            cursor: hideMeaning ? 'pointer' : 'default',
+          }}
+          onClick={() => hideMeaning && setRevealedMeaning(false)}
+        >
+          <p style={{ fontSize: '1.05rem', fontWeight: 700, color: '#f8fafc' }}>
+            {word.meaning}
           </p>
-        )}
-      </div>
+          {word.hanViet && (
+            <p style={{
+              fontSize: '0.75rem',
+              fontWeight: 600,
+              color: 'var(--accent-light)',
+              marginTop: 3,
+              letterSpacing: '0.06em',
+              textTransform: 'uppercase',
+            }}>
+              Hán Việt: {word.hanViet}
+            </p>
+          )}
+        </div>
+      ) : (
+        <div style={{ textAlign: 'center', marginBottom: 14 }}>
+          <button
+            onClick={() => {
+              sounds.playTap();
+              setRevealedMeaning(true);
+            }}
+            style={{
+              width: '100%',
+              background: 'rgba(56, 189, 248, 0.08)',
+              border: '1.5px dashed rgba(56, 189, 248, 0.35)',
+              borderRadius: '12px',
+              padding: '12px 16px',
+              color: 'var(--sky)',
+              fontSize: '0.9rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+            }}
+          >
+            👁️ Chạm để hiện Nghĩa tiếng Việt
+          </button>
+        </div>
+      )}
 
       {/* Detailed Fields */}
       {showFull && (
@@ -234,18 +349,6 @@ function BookmarkBtn({ active, onClick, icon, label, activeColor }: {
         transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
         fontSize: '0.78rem',
         fontWeight: 600,
-      }}
-      onMouseEnter={e => {
-        if (!active) {
-          e.currentTarget.style.background = 'rgba(255, 255, 255, 0.06)';
-          e.currentTarget.style.color = 'var(--text-secondary)';
-        }
-      }}
-      onMouseLeave={e => {
-        if (!active) {
-          e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
-          e.currentTarget.style.color = 'var(--text-muted)';
-        }
       }}
     >
       <span style={{ fontSize: '0.95rem' }}>{icon}</span>
