@@ -80,7 +80,7 @@ export default function ImportTxt({ onClose }: ImportTxtProps) {
   const [errors, setErrors] = useState<string[]>([]);
   const [importing, setImporting] = useState(false);
   const [done, setDone] = useState(false);
-  const { addImportedWords } = useVocabulary();
+  const { addImportedWords, clearImported } = useVocabulary();
 
   const handleParse = () => {
     sounds.playTap();
@@ -166,7 +166,7 @@ export default function ImportTxt({ onClose }: ImportTxtProps) {
               Import thành công {preview?.length} từ!
             </p>
             <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: 20 }}>
-              Dữ liệu đã được lưu vào danh sách học trên thiết bị của bạn.
+              Dữ liệu được lưu vĩnh viễn trong bộ nhớ LocalStorage của trình duyệt này.
             </p>
             <button className="btn btn-primary" onClick={onClose} style={{ padding: '12px 28px' }}>
               Bắt đầu học ngay
@@ -289,6 +289,41 @@ export default function ImportTxt({ onClose }: ImportTxtProps) {
                 </button>
               </div>
             )}
+
+            {/* Note about LocalStorage persistence */}
+            <div style={{
+              marginTop: 14,
+              padding: '12px 14px',
+              background: 'rgba(255, 255, 255, 0.02)',
+              border: '1px solid var(--border)',
+              borderRadius: '12px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              fontSize: '0.75rem',
+              color: 'var(--text-muted)',
+            }}>
+              <span>💾 Lưu vĩnh viễn trên trình duyệt của bạn</span>
+              <button
+                onClick={() => {
+                  if (confirm('Bạn có chắc muốn xóa tất cả từ vựng bạn đã tự import thêm? (Danh sách 687 từ gốc vẫn được giữ nguyên)')) {
+                    clearImported();
+                    sounds.playTap();
+                    alert('Đã xóa các từ tự import!');
+                  }
+                }}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: 'var(--rose)',
+                  cursor: 'pointer',
+                  fontSize: '0.72rem',
+                  fontWeight: 600,
+                }}
+              >
+                🗑️ Xóa từ đã import
+              </button>
+            </div>
           </>
         )}
       </div>
