@@ -289,7 +289,7 @@ export default function HomePage() {
             </span>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <span style={{ fontSize: '0.76rem', color: 'var(--accent-hover)', fontWeight: 700 }}>
-                {vocabSource === 'imported' ? 'Đang chọn: Bộ Import' : vocabSource === 'default' ? 'Đang chọn: Bộ Gốc (880 từ)' : 'Đang chọn: Tất cả'}
+                {vocabSource === 'imported' ? 'Đang chọn: Bộ Import' : vocabSource === 'default' ? 'Đang chọn: Gốc Mimikara' : 'Đang chọn: Tất cả'}
               </span>
 
               {/* Delete Default Sample (687 words) Button */}
@@ -309,7 +309,7 @@ export default function HomePage() {
                   }}
                   title="Xóa bộ mẫu gốc 687 từ"
                 >
-                  Xóa bộ gốc ({defaultWords.length})
+                  Xóa bộ gốc (687 từ)
                 </button>
               )}
 
@@ -399,7 +399,7 @@ export default function HomePage() {
               )}
             </button>
 
-            {/* Tab: Default Mimikara (880 words / sample 687 words) */}
+            {/* Tab: Default Mimikara (sample 687 words) */}
             <button
               onClick={() => handleSourceSelect('default')}
               style={{
@@ -420,13 +420,13 @@ export default function HomePage() {
                 position: 'relative',
               }}
             >
-              <span>Bộ Gốc (880 từ)</span>
+              <span>Gốc Mimikara</span>
               <span style={{
                 fontSize: '0.72rem',
                 opacity: vocabSource === 'default' ? 0.95 : 0.65,
                 fontWeight: 700,
               }}>
-                {defaultDeleted ? 'Đã xóa mẫu' : `${defaultWords.length} từ`}
+                {defaultDeleted ? 'Đã xóa (687 từ)' : '687 từ'}
               </span>
               {!defaultDeleted ? (
                 <span
