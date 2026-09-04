@@ -6,17 +6,18 @@ import VocabCard from '@/components/VocabCard';
 import { sounds } from '@/utils/sound';
 
 export default function SequentialPage() {
-  const { studyWords } = useVocabulary();
+  const { studyWords, vocabSource } = useVocabulary();
   const [index, setIndex] = useState(0);
   const [expanded, setExpanded] = useState(true);
 
+  const sourceLabel = vocabSource === 'imported' ? 'Bộ Import' : vocabSource === 'default' ? 'Bộ gốc N3' : 'Tất cả';
   const current = studyWords[index];
   const total = studyWords.length;
 
   if (!current) {
     return (
-      <PageWrapper title="📖 Học tuần tự" subtitle="Theo danh mục">
-        <p style={{ color: 'var(--text-muted)', textAlign: 'center', marginTop: 40 }}>
+      <PageWrapper title="Học Tuần Tự" subtitle={`Theo danh mục • ${sourceLabel}`}>
+        <p style={{ color: 'var(--text-muted)', textAlign: 'center', marginTop: 40, fontWeight: 600 }}>
           Không có từ vựng nào trong danh sách.
         </p>
       </PageWrapper>
@@ -34,7 +35,7 @@ export default function SequentialPage() {
   };
 
   return (
-    <PageWrapper title="📖 Học tuần tự" subtitle={`${index + 1} / ${total} từ vựng`}>
+    <PageWrapper title="Học Tuần Tự" subtitle={`Từ ${index + 1} / ${total} • ${sourceLabel}`}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
         {/* Progress */}
         <div>
@@ -96,12 +97,13 @@ export default function SequentialPage() {
                   className="badge"
                   style={{
                     cursor: 'pointer',
-                    background: isActive ? 'var(--accent)' : 'rgba(255, 255, 255, 0.04)',
+                    background: isActive ? 'linear-gradient(135deg, #f97316, #ea580c)' : '#ffffff',
                     color: isActive ? '#ffffff' : 'var(--text-secondary)',
-                    border: `1px solid ${isActive ? 'transparent' : 'rgba(255, 255, 255, 0.08)'}`,
-                    padding: '6px 12px',
-                    fontSize: '0.75rem',
-                    fontWeight: 600,
+                    border: `1px solid ${isActive ? 'transparent' : 'var(--border)'}`,
+                    padding: '7px 14px',
+                    fontSize: '0.78rem',
+                    fontWeight: 700,
+                    boxShadow: isActive ? '0 4px 12px rgba(234, 88, 12, 0.3)' : '0 2px 6px rgba(0, 0, 0, 0.03)',
                     transition: 'all 0.15s ease',
                   }}
                   onClick={() => {

@@ -13,11 +13,13 @@ function pickRandom(words: VocabWord[], exclude?: number): VocabWord {
 }
 
 export default function RandomPage() {
-  const { studyWords } = useVocabulary();
+  const { studyWords, vocabSource } = useVocabulary();
   const [current, setCurrent] = useState<VocabWord | null>(null);
   const [history, setHistory] = useState<VocabWord[]>([]);
   const [expanded, setExpanded] = useState(true);
   const [animating, setAnimating] = useState(false);
+
+  const sourceLabel = vocabSource === 'imported' ? 'Bộ Import' : vocabSource === 'default' ? 'Bộ gốc N3' : 'Tất cả';
 
   // Toggle hide/show states
   const [hideKanji, setHideKanji] = useLocalStorage<boolean>('hide_kanji_random', false);
@@ -46,8 +48,8 @@ export default function RandomPage() {
 
   if (!current) {
     return (
-      <PageWrapper title="🎲 Ngẫu nhiên" subtitle="Luyện phản xạ">
-        <p style={{ color: 'var(--text-muted)', textAlign: 'center', marginTop: 40 }}>
+      <PageWrapper title="Luyện Ngẫu Nhiên" subtitle={`Luyện phản xạ • ${sourceLabel}`}>
+        <p style={{ color: 'var(--text-muted)', textAlign: 'center', marginTop: 40, fontWeight: 600 }}>
           Không có từ vựng nào trong danh sách.
         </p>
       </PageWrapper>
@@ -55,7 +57,7 @@ export default function RandomPage() {
   }
 
   return (
-    <PageWrapper title="🎲 Luyện ngẫu nhiên" subtitle={`${studyWords.length} từ vựng`}>
+    <PageWrapper title="Luyện Ngẫu Nhiên" subtitle={`${studyWords.length} từ • ${sourceLabel}`}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
         
         {/* Toggle Hide/Show Bar */}
@@ -63,7 +65,7 @@ export default function RandomPage() {
           display: 'grid',
           gridTemplateColumns: 'repeat(3, 1fr)',
           gap: 6,
-          background: 'rgba(255, 255, 255, 0.03)',
+          background: 'var(--bg-secondary)',
           padding: 6,
           borderRadius: '16px',
           border: '1px solid var(--border)',
@@ -76,9 +78,9 @@ export default function RandomPage() {
             style={{
               padding: '8px 4px',
               borderRadius: '10px',
-              border: 'none',
-              background: hideKanji ? 'rgba(139, 92, 246, 0.2)' : 'rgba(255, 255, 255, 0.06)',
-              color: hideKanji ? 'var(--accent-light)' : 'var(--text-secondary)',
+              border: `1px solid ${hideKanji ? 'var(--accent)' : 'var(--border)'}`,
+              background: hideKanji ? 'rgba(254, 215, 170, 0.4)' : '#ffffff',
+              color: hideKanji ? 'var(--accent-hover)' : 'var(--text-secondary)',
               fontSize: '0.75rem',
               fontWeight: 700,
               cursor: 'pointer',
@@ -89,8 +91,7 @@ export default function RandomPage() {
               transition: 'all 0.2s',
             }}
           >
-            <span>{hideKanji ? '🙈' : '👁️'}</span>
-            <span>{hideKanji ? 'Ẩn Kanji' : 'Kanji'}</span>
+            <span>{hideKanji ? 'Đang ẩn Kanji' : 'Ẩn Kanji'}</span>
           </button>
 
           <button
@@ -101,8 +102,8 @@ export default function RandomPage() {
             style={{
               padding: '8px 4px',
               borderRadius: '10px',
-              border: 'none',
-              background: hideHiragana ? 'rgba(56, 189, 248, 0.2)' : 'rgba(255, 255, 255, 0.06)',
+              border: `1px solid ${hideHiragana ? 'var(--sky)' : 'var(--border)'}`,
+              background: hideHiragana ? 'var(--sky-dim)' : '#ffffff',
               color: hideHiragana ? 'var(--sky)' : 'var(--text-secondary)',
               fontSize: '0.75rem',
               fontWeight: 700,
@@ -114,8 +115,7 @@ export default function RandomPage() {
               transition: 'all 0.2s',
             }}
           >
-            <span>{hideHiragana ? '🙈' : '👁️'}</span>
-            <span>{hideHiragana ? 'Ẩn Hira' : 'Hiragana'}</span>
+            <span>{hideHiragana ? 'Đang ẩn Hira' : 'Ẩn Hiragana'}</span>
           </button>
 
           <button
@@ -126,8 +126,8 @@ export default function RandomPage() {
             style={{
               padding: '8px 4px',
               borderRadius: '10px',
-              border: 'none',
-              background: hideMeaning ? 'rgba(16, 185, 129, 0.2)' : 'rgba(255, 255, 255, 0.06)',
+              border: `1px solid ${hideMeaning ? 'var(--emerald)' : 'var(--border)'}`,
+              background: hideMeaning ? 'var(--emerald-dim)' : '#ffffff',
               color: hideMeaning ? 'var(--emerald)' : 'var(--text-secondary)',
               fontSize: '0.75rem',
               fontWeight: 700,
@@ -139,8 +139,7 @@ export default function RandomPage() {
               transition: 'all 0.2s',
             }}
           >
-            <span>{hideMeaning ? '🙈' : '👁️'}</span>
-            <span>{hideMeaning ? 'Ẩn Nghĩa' : 'Nghĩa TV'}</span>
+            <span>{hideMeaning ? 'Đang ẩn Nghĩa' : 'Ẩn Nghĩa'}</span>
           </button>
         </div>
 
@@ -178,13 +177,13 @@ export default function RandomPage() {
           style={{ width: '100%', padding: '16px', fontSize: '1rem', fontWeight: 700 }}
           onClick={getNew}
         >
-          🎲 Đổi từ ngẫu nhiên khác
+          Đổi từ ngẫu nhiên khác
         </button>
 
         {/* Recent History */}
         {history.length > 1 && (
           <div style={{ marginTop: 8 }}>
-            <p style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               ĐÃ XEM GẦN ĐÂY ({history.length - 1} từ)
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6, maxHeight: 220, overflowY: 'auto' }}>
@@ -197,8 +196,8 @@ export default function RandomPage() {
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     padding: '10px 14px',
-                    background: 'rgba(255, 255, 255, 0.03)',
-                    border: '1px solid rgba(255, 255, 255, 0.06)',
+                    background: '#ffffff',
+                    border: '1px solid var(--border)',
                     borderRadius: '12px',
                     cursor: 'pointer',
                     textAlign: 'left',
@@ -210,14 +209,14 @@ export default function RandomPage() {
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <span className="jp-text" style={{ fontWeight: 700, fontSize: '1.05rem', color: '#ffffff' }}>
+                    <span className="jp-text" style={{ fontWeight: 800, fontSize: '1.05rem', color: 'var(--text-primary)' }}>
                       {w.kanji}
                     </span>
-                    <span className="jp-text" style={{ color: 'var(--accent-light)', fontSize: '0.8rem' }}>
+                    <span className="jp-text" style={{ color: 'var(--accent-hover)', fontSize: '0.82rem', fontWeight: 600 }}>
                       {w.hiragana}
                     </span>
                   </div>
-                  <span style={{ color: 'var(--text-secondary)', fontSize: '0.82rem' }}>
+                  <span style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', fontWeight: 500 }}>
                     {w.meaning}
                   </span>
                 </button>

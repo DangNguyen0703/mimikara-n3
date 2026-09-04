@@ -144,8 +144,7 @@ export default function FlashCard({ words }: FlashCardProps) {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
       {/* Top Header: Quick Jump & Unit */}
       <div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8, alignItems: 'center' }}>
-          <button
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8, alignItems: 'center' }}>          <button
             onClick={() => {
               sounds.playTap();
               setJumpInput(String(index + 1));
@@ -156,23 +155,22 @@ export default function FlashCard({ words }: FlashCardProps) {
               display: 'inline-flex',
               alignItems: 'center',
               gap: 6,
-              background: 'rgba(139, 92, 246, 0.15)',
-              border: '1px solid rgba(139, 92, 246, 0.35)',
+              background: 'rgba(254, 215, 170, 0.35)',
+              border: '1px solid var(--accent)',
               borderRadius: '9999px',
-              padding: '4px 12px',
+              padding: '5px 14px',
               cursor: 'pointer',
-              color: '#ffffff',
+              color: 'var(--accent-hover)',
             }}
             title="Bấm để nhảy nhanh đến số từ bất kỳ"
           >
-            <span style={{ fontSize: '0.85rem' }}>🎯</span>
             <span style={{ fontSize: '0.88rem', fontWeight: 800 }}>
-              {index + 1}
+              Từ {index + 1}
             </span>
-            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-              / {total} từ
+            <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+              / {total}
             </span>
-            <span style={{ fontSize: '0.68rem', color: 'var(--accent-light)', marginLeft: 2 }}>
+            <span style={{ fontSize: '0.7rem', color: 'var(--accent)', marginLeft: 4, fontWeight: 700 }}>
               [Đổi số]
             </span>
           </button>
@@ -201,23 +199,21 @@ export default function FlashCard({ words }: FlashCardProps) {
             setHideKanji(h => !h);
           }}
           style={{
-            padding: '7px 10px',
+            padding: '8px 10px',
             borderRadius: '12px',
-            border: `1px solid ${hideKanji ? 'rgba(139, 92, 246, 0.4)' : 'var(--border)'}`,
-            background: hideKanji ? 'rgba(139, 92, 246, 0.2)' : 'rgba(255, 255, 255, 0.04)',
-            color: hideKanji ? 'var(--accent-light)' : 'var(--text-secondary)',
-            fontSize: '0.76rem',
+            border: `1px solid ${hideKanji ? 'var(--accent)' : 'var(--border)'}`,
+            background: hideKanji ? 'rgba(254, 215, 170, 0.4)' : '#ffffff',
+            color: hideKanji ? 'var(--accent-hover)' : 'var(--text-secondary)',
+            fontSize: '0.78rem',
             fontWeight: 700,
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: 6,
             transition: 'all 0.2s',
           }}
         >
-          <span>{hideKanji ? '🙈' : '👁️'}</span>
-          <span>{hideKanji ? 'Đang ẩn Kanji' : 'Hiện Kanji'}</span>
+          <span>{hideKanji ? 'Đang ẩn Kanji' : 'Ẩn chữ Kanji'}</span>
         </button>
 
         <button
@@ -226,23 +222,21 @@ export default function FlashCard({ words }: FlashCardProps) {
             setHideHiragana(h => !h);
           }}
           style={{
-            padding: '7px 10px',
+            padding: '8px 10px',
             borderRadius: '12px',
-            border: `1px solid ${hideHiragana ? 'rgba(56, 189, 248, 0.4)' : 'var(--border)'}`,
-            background: hideHiragana ? 'rgba(56, 189, 248, 0.2)' : 'rgba(255, 255, 255, 0.04)',
+            border: `1px solid ${hideHiragana ? 'var(--sky)' : 'var(--border)'}`,
+            background: hideHiragana ? 'var(--sky-dim)' : '#ffffff',
             color: hideHiragana ? 'var(--sky)' : 'var(--text-secondary)',
-            fontSize: '0.76rem',
+            fontSize: '0.78rem',
             fontWeight: 700,
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: 6,
             transition: 'all 0.2s',
           }}
         >
-          <span>{hideHiragana ? '🙈' : '👁️'}</span>
-          <span>{hideHiragana ? 'Đang ẩn Hiragana' : 'Hiện Hiragana'}</span>
+          <span>{hideHiragana ? 'Đang ẩn Hiragana' : 'Ẩn chữ Hiragana'}</span>
         </button>
       </div>
 
@@ -272,13 +266,14 @@ export default function FlashCard({ words }: FlashCardProps) {
               padding: '24px 20px',
               justifyContent: 'space-between',
               alignItems: 'center',
-              background: 'linear-gradient(145deg, rgba(26, 29, 46, 0.9) 0%, rgba(17, 19, 31, 0.9) 100%)',
-              border: '1px solid rgba(255, 255, 255, 0.12)',
+              background: 'linear-gradient(145deg, #ffffff 0%, #fff7ed 100%)',
+              border: '1.5px solid rgba(249, 115, 22, 0.25)',
+              boxShadow: '0 12px 35px -10px rgba(234, 88, 12, 0.12)',
             }}
           >
             {/* Top Row on Front */}
             <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600, letterSpacing: '0.04em' }}>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 700, letterSpacing: '0.04em' }}>
                 CHẠM ĐỂ LẬT THẺ
               </span>
               <button
@@ -307,10 +302,9 @@ export default function FlashCard({ words }: FlashCardProps) {
                   style={{
                     fontSize: 'clamp(2.8rem, 12vw, 4.2rem)',
                     fontWeight: 900,
-                    color: '#ffffff',
+                    color: 'var(--text-primary)',
                     lineHeight: 1.15,
                     letterSpacing: '0.02em',
-                    textShadow: '0 4px 24px rgba(139, 92, 246, 0.35)',
                     cursor: hideKanji ? 'pointer' : 'default',
                   }}
                   onClick={(e) => {
@@ -330,11 +324,11 @@ export default function FlashCard({ words }: FlashCardProps) {
                     setRevealedKanji(true);
                   }}
                   style={{
-                    background: 'rgba(139, 92, 246, 0.12)',
-                    border: '1.5px dashed rgba(139, 92, 246, 0.4)',
+                    background: 'rgba(254, 215, 170, 0.3)',
+                    border: '1.5px dashed var(--accent)',
                     borderRadius: '16px',
                     padding: '16px 24px',
-                    color: 'var(--accent-light)',
+                    color: 'var(--accent-hover)',
                     fontSize: '1rem',
                     fontWeight: 700,
                     cursor: 'pointer',
@@ -344,7 +338,7 @@ export default function FlashCard({ words }: FlashCardProps) {
                     gap: 8,
                   }}
                 >
-                  <span>🙈</span> Chạm để hiện Kanji
+                  Chạm để hiện Kanji
                 </button>
               )}
 
@@ -353,9 +347,9 @@ export default function FlashCard({ words }: FlashCardProps) {
                 <p
                   className="jp-text animate-fade-in"
                   style={{
-                    fontSize: '1.3rem',
-                    fontWeight: 700,
-                    color: 'var(--accent-light)',
+                    fontSize: '1.35rem',
+                    fontWeight: 800,
+                    color: 'var(--accent-hover)',
                     marginTop: 8,
                     cursor: hideHiragana ? 'pointer' : 'default',
                   }}
@@ -377,8 +371,8 @@ export default function FlashCard({ words }: FlashCardProps) {
                       setRevealedHiragana(true);
                     }}
                     style={{
-                      background: 'rgba(56, 189, 248, 0.1)',
-                      border: '1px dashed rgba(56, 189, 248, 0.35)',
+                      background: 'var(--sky-dim)',
+                      border: '1px dashed var(--sky)',
                       borderRadius: '9999px',
                       padding: '5px 14px',
                       color: 'var(--sky)',
@@ -387,7 +381,7 @@ export default function FlashCard({ words }: FlashCardProps) {
                       cursor: 'pointer',
                     }}
                   >
-                    🙈 Chạm để hiện Hiragana
+                    Chạm để hiện Hiragana
                   </button>
                 </div>
               )}
@@ -400,15 +394,16 @@ export default function FlashCard({ words }: FlashCardProps) {
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: 6,
+                fontWeight: 500,
               }}>
-                <span>💡</span> Lật thẻ để xem nghĩa & ví dụ
+                Chạm vào thẻ hoặc bấm phím Cách để lật thẻ
               </p>
             </div>
 
             {/* Bottom Hint */}
-            <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600 }}>
               <span>← Vuốt để chuyển từ</span>
-              <span>Phím cách: Lật ␣</span>
+              <span>Phím cách: Lật thẻ</span>
             </div>
           </div>
 
@@ -418,9 +413,9 @@ export default function FlashCard({ words }: FlashCardProps) {
             style={{
               padding: '20px',
               overflowY: 'auto',
-              background: 'linear-gradient(145deg, rgba(22, 25, 42, 0.95) 0%, rgba(15, 17, 28, 0.95) 100%)',
-              border: '1px solid rgba(139, 92, 246, 0.35)',
-              boxShadow: '0 12px 40px -10px rgba(139, 92, 246, 0.35)',
+              background: 'linear-gradient(145deg, #ffffff 0%, #fffbf5 100%)',
+              border: '1.5px solid rgba(249, 115, 22, 0.3)',
+              boxShadow: '0 12px 35px -10px rgba(234, 88, 12, 0.12)',
             }}
           >
             <VocabCard word={current} showFull={true} />
@@ -438,7 +433,7 @@ export default function FlashCard({ words }: FlashCardProps) {
           onClick={handleFlip}
           style={{ padding: '14px 12px' }}
         >
-          {flipped ? '🔄 Xem mặt trước' : '✨ Xem nghĩa & ví dụ'}
+          {flipped ? 'Xem mặt trước' : 'Xem nghĩa & ví dụ'}
         </button>
         <button className="btn btn-secondary" onClick={() => go(1)} style={{ padding: '14px 10px' }}>
           Tiếp →
@@ -447,42 +442,20 @@ export default function FlashCard({ words }: FlashCardProps) {
 
       {/* Quick Jump Modal */}
       {showJumpModal && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: 100,
-            background: 'rgba(0, 0, 0, 0.75)',
-            backdropFilter: 'blur(10px)',
-            WebkitBackdropFilter: 'blur(10px)',
-            display: 'flex',
-            alignItems: 'flex-end',
-          }}
-          onClick={() => setShowJumpModal(false)}
-        >
+        <div className="modal-overlay" onClick={() => setShowJumpModal(false)}>
           <div
-            className="animate-fade-in"
-            style={{
-              background: '#131522',
-              borderTop: '1px solid rgba(255, 255, 255, 0.12)',
-              borderRadius: '24px 24px 0 0',
-              padding: '24px 20px',
-              paddingBottom: 'calc(env(safe-area-inset-bottom, 20px) + 20px)',
-              width: '100%',
-              maxWidth: 480,
-              margin: '0 auto',
-              maxHeight: '85dvh',
-              overflowY: 'auto',
-            }}
+            className="modal-sheet animate-scale-in"
             onClick={e => e.stopPropagation()}
           >
             {/* Modal Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ fontSize: '1.25rem' }}>🎯</span>
-                <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#ffffff' }}>
-                  Nhảy nhanh đến từ số...
+              <div>
+                <h3 style={{ fontSize: '1.18rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+                  Nhảy Nhanh Đến Từ
                 </h3>
+                <p style={{ fontSize: '0.74rem', color: 'var(--text-muted)', marginTop: 2 }}>
+                  Chọn số thứ tự hoặc bài học
+                </p>
               </div>
               <button
                 className="btn-secondary btn"
@@ -509,13 +482,13 @@ export default function FlashCard({ words }: FlashCardProps) {
                 placeholder={`Nhập từ 1 đến ${total}...`}
                 style={{
                   flex: 1,
-                  background: 'rgba(255, 255, 255, 0.05)',
+                  background: 'var(--bg-secondary)',
                   border: '1.5px solid var(--border)',
                   borderRadius: '12px',
                   padding: '12px 16px',
                   fontSize: '1.1rem',
                   fontWeight: 700,
-                  color: '#ffffff',
+                  color: 'var(--text-primary)',
                   outline: 'none',
                 }}
                 autoFocus
@@ -533,7 +506,7 @@ export default function FlashCard({ words }: FlashCardProps) {
 
             {/* Quick Step Buttons (+10, +50, -10, -50) */}
             <div style={{ marginBottom: 18 }}>
-              <p style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 8, letterSpacing: '0.04em' }}>
+              <p style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 8, letterSpacing: '0.04em' }}>
                 BƯỚC NHẢY NHANH
               </p>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
@@ -550,12 +523,12 @@ export default function FlashCard({ words }: FlashCardProps) {
                         padding: '10px 4px',
                         borderRadius: '10px',
                         border: '1px solid var(--border)',
-                        background: 'rgba(255, 255, 255, 0.04)',
-                        color: isDisabled ? 'var(--text-muted)' : '#ffffff',
+                        background: '#ffffff',
+                        color: isDisabled ? 'var(--text-muted)' : 'var(--text-primary)',
                         fontSize: '0.85rem',
                         fontWeight: 700,
                         cursor: isDisabled ? 'not-allowed' : 'pointer',
-                        opacity: isDisabled ? 0.3 : 1,
+                        opacity: isDisabled ? 0.35 : 1,
                       }}
                     >
                       {step > 0 ? `+${step}` : step}
@@ -567,8 +540,8 @@ export default function FlashCard({ words }: FlashCardProps) {
 
             {/* Unit Shortcuts */}
             <div>
-              <p style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 8, letterSpacing: '0.04em' }}>
-                HOẶC CHỌN THEO BÀI (UNIT)
+              <p style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 8, letterSpacing: '0.04em' }}>
+                HOẶC CHỌN THEO BÀI HỌC (UNIT)
               </p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6, maxHeight: 220, overflowY: 'auto' }}>
                 {unitList.map(([unitName, startIdx]) => (
@@ -582,15 +555,15 @@ export default function FlashCard({ words }: FlashCardProps) {
                       justifyContent: 'space-between',
                       padding: '10px 14px',
                       borderRadius: '12px',
-                      border: `1px solid ${current.unit === unitName ? 'rgba(139, 92, 246, 0.4)' : 'rgba(255, 255, 255, 0.06)'}`,
-                      background: current.unit === unitName ? 'rgba(139, 92, 246, 0.15)' : 'rgba(255, 255, 255, 0.03)',
-                      color: '#ffffff',
+                      border: `1px solid ${current.unit === unitName ? 'var(--accent)' : 'var(--border)'}`,
+                      background: current.unit === unitName ? 'rgba(254, 215, 170, 0.35)' : '#ffffff',
+                      color: 'var(--text-primary)',
                       textAlign: 'left',
                       cursor: 'pointer',
                     }}
                   >
-                    <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>{unitName}</span>
-                    <span style={{ fontSize: '0.75rem', color: 'var(--accent-light)', fontWeight: 700 }}>
+                    <span style={{ fontSize: '0.85rem', fontWeight: 700 }}>{unitName}</span>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--accent-hover)', fontWeight: 800 }}>
                       Từ #{startIdx + 1} →
                     </span>
                   </button>

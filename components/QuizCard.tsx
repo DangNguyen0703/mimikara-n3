@@ -106,10 +106,23 @@ export default function QuizCard({ words, mode }: QuizCardProps) {
     const pct = Math.round((score.correct / total) * 100);
     return (
       <div className="glass-card animate-scale-in" style={{ padding: '36px 24px', textAlign: 'center' }}>
-        <div style={{ fontSize: '3.5rem', marginBottom: 12 }}>
-          {pct >= 90 ? '🏆' : pct >= 70 ? '🎉' : '💪'}
+        <div style={{
+          width: 72,
+          height: 72,
+          borderRadius: '50%',
+          background: 'rgba(254, 215, 170, 0.35)',
+          border: '2px solid var(--accent)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          margin: '0 auto 16px',
+          fontSize: '1.4rem',
+          fontWeight: 900,
+          color: 'var(--accent-hover)',
+        }}>
+          {pct}%
         </div>
-        <h2 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: 4 }}>
+        <h2 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: 4, color: 'var(--text-primary)' }}>
           {pct >= 90 ? 'Xuất sắc!' : pct >= 70 ? 'Làm tốt lắm!' : 'Cố gắng lên!'}
         </h2>
         <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: 20 }}>
@@ -120,28 +133,28 @@ export default function QuizCard({ words, mode }: QuizCardProps) {
           display: 'grid',
           gridTemplateColumns: 'repeat(3, 1fr)',
           gap: 10,
-          background: 'rgba(255, 255, 255, 0.03)',
+          background: 'var(--bg-secondary)',
           border: '1px solid var(--border)',
           borderRadius: '16px',
           padding: '16px 12px',
           marginBottom: 24,
         }}>
           <div>
-            <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>Chính xác</span>
-            <p style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--emerald)', marginTop: 2 }}>{pct}%</p>
+            <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>Chính xác</span>
+            <p style={{ fontSize: '1.4rem', fontWeight: 900, color: 'var(--emerald)', marginTop: 2 }}>{pct}%</p>
           </div>
           <div>
-            <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>Điểm</span>
-            <p style={{ fontSize: '1.4rem', fontWeight: 800, color: '#ffffff', marginTop: 2 }}>{score.correct}/{total}</p>
+            <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>Điểm</span>
+            <p style={{ fontSize: '1.4rem', fontWeight: 900, color: 'var(--text-primary)', marginTop: 2 }}>{score.correct}/{total}</p>
           </div>
           <div>
-            <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>Max Streak</span>
-            <p style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--amber)', marginTop: 2 }}>🔥 {maxStreak}</p>
+            <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>Max Chuỗi</span>
+            <p style={{ fontSize: '1.4rem', fontWeight: 900, color: 'var(--amber)', marginTop: 2 }}>{maxStreak}</p>
           </div>
         </div>
 
-        <button className="btn btn-primary" onClick={restart} style={{ width: '100%', padding: '14px' }}>
-          🔄 Luyện tập lại
+        <button className="btn btn-primary" onClick={restart} style={{ width: '100%', padding: '14px', fontSize: '0.98rem' }}>
+          Luyện tập lại
         </button>
       </div>
     );
@@ -157,18 +170,18 @@ export default function QuizCard({ words, mode }: QuizCardProps) {
       <div>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8, alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+            <span style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--text-primary)' }}>
               {index + 1} / {questions.length}
             </span>
             {streak >= 2 && (
               <span className="badge badge-amber animate-scale-in">
-                🔥 Streak {streak}
+                Chuỗi {streak}
               </span>
             )}
           </div>
           <div style={{ display: 'flex', gap: 10 }}>
-            <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--emerald)' }}>✓ {score.correct}</span>
-            <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--rose)' }}>✗ {score.wrong}</span>
+            <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--emerald)' }}>✓ {score.correct}</span>
+            <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--rose)' }}>✗ {score.wrong}</span>
           </div>
         </div>
         <div className="progress-bar-container">
@@ -183,11 +196,13 @@ export default function QuizCard({ words, mode }: QuizCardProps) {
           padding: '28px 20px',
           textAlign: 'center',
           position: 'relative',
-          background: 'linear-gradient(145deg, rgba(26, 29, 46, 0.9) 0%, rgba(17, 19, 31, 0.9) 100%)',
+          background: 'linear-gradient(145deg, #ffffff 0%, #fff7ed 100%)',
+          border: '1.5px solid rgba(249, 115, 22, 0.25)',
+          boxShadow: '0 10px 25px -6px rgba(234, 88, 12, 0.1)',
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-          <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)' }}>
+          <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
             {mode === 'kanji' ? 'CHỌN NGHĨA ĐÚNG' : 'CHỌN KANJI ĐÚNG'}
           </span>
           <button
@@ -207,45 +222,44 @@ export default function QuizCard({ words, mode }: QuizCardProps) {
         </div>
 
         <p className={mode === 'kanji' ? 'jp-text' : ''} style={{
-          fontSize: mode === 'kanji' ? 'clamp(2.8rem, 11vw, 4rem)' : '1.3rem',
-          fontWeight: mode === 'kanji' ? 900 : 700,
-          color: '#ffffff',
+          fontSize: mode === 'kanji' ? 'clamp(2.8rem, 11vw, 4rem)' : '1.35rem',
+          fontWeight: mode === 'kanji' ? 900 : 800,
+          color: 'var(--text-primary)',
           lineHeight: 1.2,
           margin: '10px 0',
-          textShadow: '0 2px 20px rgba(139, 92, 246, 0.3)',
         }}>
           {question}
         </p>
 
         {mode === 'kanji' && (
-          <p className="jp-text" style={{ fontSize: '1.05rem', fontWeight: 600, color: 'var(--accent-light)' }}>
+          <p className="jp-text" style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--accent-hover)' }}>
             {current.hiragana}
           </p>
         )}
       </div>
 
-      {/* 4 Choices */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+      {/* 4 Choices in Responsive Grid (2 cols on laptop, 1 col on mobile) */}
+      <div className="quiz-choices-grid">
         {choices.map((choice, i) => {
           const isCorrect = choice.id === current.id;
           const isSelected = selected === choice.id;
 
-          let bg = 'rgba(255, 255, 255, 0.04)';
-          let border = 'rgba(255, 255, 255, 0.08)';
+          let bg = '#ffffff';
+          let border = 'var(--border)';
           let color = 'var(--text-primary)';
-          let shadow = 'none';
+          let shadow = '0 2px 8px rgba(0, 0, 0, 0.03)';
 
           if (selected !== null) {
             if (isCorrect) {
-              bg = 'rgba(16, 185, 129, 0.2)';
-              border = 'rgba(16, 185, 129, 0.8)';
-              color = '#34d399';
-              shadow = '0 0 20px rgba(16, 185, 129, 0.35)';
+              bg = 'rgba(5, 150, 105, 0.12)';
+              border = 'var(--emerald)';
+              color = 'var(--emerald)';
+              shadow = '0 0 18px rgba(5, 150, 105, 0.25)';
             } else if (isSelected) {
-              bg = 'rgba(244, 63, 94, 0.2)';
-              border = 'rgba(244, 63, 94, 0.8)';
-              color = '#f87171';
-              shadow = '0 0 20px rgba(244, 63, 94, 0.35)';
+              bg = 'rgba(225, 29, 72, 0.12)';
+              border = 'var(--rose)';
+              color = 'var(--rose)';
+              shadow = '0 0 18px rgba(225, 29, 72, 0.25)';
             }
           }
 
@@ -272,29 +286,29 @@ export default function QuizCard({ words, mode }: QuizCardProps) {
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <span style={{
-                  width: 26,
-                  height: 26,
+                  width: 28,
+                  height: 28,
                   borderRadius: '50%',
-                  background: 'rgba(255, 255, 255, 0.06)',
+                  background: 'rgba(254, 215, 170, 0.35)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: '0.75rem',
-                  fontWeight: 700,
-                  color: 'var(--text-muted)',
+                  fontSize: '0.8rem',
+                  fontWeight: 800,
+                  color: 'var(--accent-hover)',
                 }}>
                   {String.fromCharCode(65 + i)}
                 </span>
                 <div>
                   <p className={mode === 'meaning' ? 'jp-text' : ''} style={{
-                    fontSize: mode === 'meaning' ? '1.25rem' : '0.95rem',
-                    fontWeight: mode === 'meaning' ? 700 : 600,
+                    fontSize: mode === 'meaning' ? '1.3rem' : '0.96rem',
+                    fontWeight: mode === 'meaning' ? 800 : 700,
                     lineHeight: 1.3,
                   }}>
                     {getChoiceLabel(choice)}
                   </p>
                   {getChoiceSub(choice) && (
-                    <span className="jp-text" style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                    <span className="jp-text" style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
                       {getChoiceSub(choice)}
                     </span>
                   )}
@@ -302,10 +316,10 @@ export default function QuizCard({ words, mode }: QuizCardProps) {
               </div>
 
               {selected !== null && isCorrect && (
-                <span style={{ fontSize: '1.2rem', color: 'var(--emerald)' }}>✓</span>
+                <span style={{ fontSize: '1.3rem', color: 'var(--emerald)', fontWeight: 800 }}>✓</span>
               )}
               {selected !== null && isSelected && !isCorrect && (
-                <span style={{ fontSize: '1.2rem', color: 'var(--rose)' }}>✗</span>
+                <span style={{ fontSize: '1.3rem', color: 'var(--rose)', fontWeight: 800 }}>✗</span>
               )}
             </button>
           );

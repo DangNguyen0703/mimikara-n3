@@ -83,7 +83,7 @@ export default function TypingCard({ words }: TypingCardProps) {
           </span>
           {streak >= 2 && (
             <span className="badge badge-amber animate-scale-in">
-              🔥 Streak {streak}
+              Chuỗi {streak}
             </span>
           )}
         </div>
@@ -99,11 +99,13 @@ export default function TypingCard({ words }: TypingCardProps) {
         style={{
           padding: '28px 20px',
           textAlign: 'center',
-          background: 'linear-gradient(145deg, rgba(26, 29, 46, 0.9) 0%, rgba(17, 19, 31, 0.9) 100%)',
+          background: 'linear-gradient(145deg, #ffffff 0%, #fff7ed 100%)',
+          border: '1.5px solid rgba(249, 115, 22, 0.25)',
+          boxShadow: '0 10px 25px -6px rgba(234, 88, 12, 0.1)',
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-          <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)' }}>
+          <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
             GÕ HIRAGANA CHÍNH XÁC
           </span>
           <button
@@ -125,20 +127,19 @@ export default function TypingCard({ words }: TypingCardProps) {
         <p className="jp-text" style={{
           fontSize: 'clamp(2.8rem, 11vw, 4rem)',
           fontWeight: 900,
-          color: '#ffffff',
+          color: 'var(--text-primary)',
           lineHeight: 1.15,
           margin: '8px 0',
-          textShadow: '0 2px 20px rgba(139, 92, 246, 0.3)',
         }}>
           {current.kanji}
         </p>
 
-        <p style={{ fontSize: '1.05rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
+        <p style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-secondary)' }}>
           {current.meaning}
         </p>
 
         {current.hanViet && (
-          <span className="badge badge-accent" style={{ marginTop: 8, fontSize: '0.72rem' }}>
+          <span className="badge badge-accent" style={{ marginTop: 8, fontSize: '0.74rem' }}>
             Hán Việt: {current.hanViet}
           </span>
         )}
@@ -147,9 +148,9 @@ export default function TypingCard({ words }: TypingCardProps) {
       {/* Input Box */}
       <div style={{
         position: 'relative',
-        background: 'rgba(255, 255, 255, 0.04)',
+        background: '#ffffff',
         border: `2px solid ${result === 'correct' ? 'var(--emerald)' : result === 'wrong' ? 'var(--rose)' : 'var(--border)'}`,
-        boxShadow: result === 'correct' ? '0 0 24px rgba(16, 185, 129, 0.3)' : result === 'wrong' ? '0 0 24px rgba(244, 63, 94, 0.3)' : 'none',
+        boxShadow: result === 'correct' ? '0 0 20px rgba(5, 150, 105, 0.25)' : result === 'wrong' ? '0 0 20px rgba(225, 29, 72, 0.25)' : '0 2px 8px rgba(0, 0, 0, 0.04)',
         borderRadius: '16px',
         padding: '6px 16px',
         transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
@@ -171,10 +172,10 @@ export default function TypingCard({ words }: TypingCardProps) {
             background: 'transparent',
             border: 'none',
             outline: 'none',
-            padding: '12px 0',
-            fontSize: '1.25rem',
-            fontWeight: 600,
-            color: result === 'correct' ? 'var(--emerald)' : result === 'wrong' ? 'var(--rose)' : '#ffffff',
+            padding: '14px 0',
+            fontSize: '1.35rem',
+            fontWeight: 700,
+            color: result === 'correct' ? 'var(--emerald)' : result === 'wrong' ? 'var(--rose)' : 'var(--text-primary)',
             fontFamily: 'Noto Sans JP, sans-serif',
             textAlign: 'center',
           }}
@@ -185,14 +186,14 @@ export default function TypingCard({ words }: TypingCardProps) {
       {result === 'wrong' && showAnswer && (
         <div className="glass-card animate-scale-in" style={{
           padding: '14px 18px',
-          background: 'rgba(244, 63, 94, 0.1)',
-          border: '1px solid rgba(244, 63, 94, 0.3)',
+          background: 'var(--rose-dim)',
+          border: '1px solid rgba(225, 29, 72, 0.3)',
           textAlign: 'center',
         }}>
-          <p style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--rose)', textTransform: 'uppercase', marginBottom: 2 }}>
+          <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--rose)', textTransform: 'uppercase', marginBottom: 2 }}>
             Đáp án chính xác:
           </p>
-          <p className="jp-text" style={{ fontSize: '1.4rem', color: '#ffffff', fontWeight: 800 }}>
+          <p className="jp-text" style={{ fontSize: '1.45rem', color: 'var(--text-primary)', fontWeight: 800 }}>
             {current.hiragana}
           </p>
         </div>
@@ -210,7 +211,7 @@ export default function TypingCard({ words }: TypingCardProps) {
                 setShowAnswer(true);
               }}
             >
-              💡 Xem gợi ý
+              Xem gợi ý
             </button>
             <button className="btn btn-primary" style={{ flex: 1.4 }} onClick={handleSubmit}>
               Kiểm tra ↵
@@ -218,15 +219,15 @@ export default function TypingCard({ words }: TypingCardProps) {
           </>
         ) : (
           <button className="btn btn-primary" style={{ flex: 1 }} onClick={goNext}>
-            {result === 'correct' ? '✅ Tiếp tục →' : 'Tiếp theo →'}
+            {result === 'correct' ? 'Tiếp tục →' : 'Tiếp theo →'}
           </button>
         )}
       </div>
 
       {/* Hint display */}
       {showAnswer && result === 'idle' && (
-        <div className="glass-card animate-fade-in" style={{ padding: '12px', textAlign: 'center' }}>
-          <p className="jp-text" style={{ fontSize: '1.3rem', color: 'var(--accent-light)', fontWeight: 700 }}>
+        <div className="glass-card animate-fade-in" style={{ padding: '12px', textAlign: 'center', background: 'var(--bg-secondary)' }}>
+          <p className="jp-text" style={{ fontSize: '1.3rem', color: 'var(--accent-hover)', fontWeight: 800 }}>
             {current.hiragana}
           </p>
         </div>

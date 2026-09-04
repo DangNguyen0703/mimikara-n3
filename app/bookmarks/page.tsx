@@ -21,21 +21,21 @@ function BookmarksContent() {
   const ids = activeType === 'starred' ? starred : activeType === 'wrong' ? wrong : forgettable;
   const words = ids.map(id => allWords.find(w => w.id === id)).filter(Boolean) as typeof allWords;
 
-  const tabs: { type: FilterType; icon: string; label: string; count: number; color: string }[] = [
-    { type: 'starred', icon: '⭐', label: 'Đánh dấu', count: starred.length, color: 'var(--amber)' },
-    { type: 'wrong', icon: '❌', label: 'Cần ôn', count: wrong.length, color: 'var(--rose)' },
-    { type: 'forgettable', icon: '➕', label: 'Hay quên', count: forgettable.length, color: 'var(--sky)' },
+  const tabs: { type: FilterType; label: string; count: number; color: string }[] = [
+    { type: 'starred', label: 'Đã lưu', count: starred.length, color: 'var(--amber)' },
+    { type: 'wrong', label: 'Cần ôn', count: wrong.length, color: 'var(--rose)' },
+    { type: 'forgettable', label: 'Hay quên', count: forgettable.length, color: 'var(--sky)' },
   ];
 
   return (
-    <PageWrapper title="📚 Danh sách lưu trữ" subtitle="Sổ tay cá nhân của bạn">
+    <PageWrapper title="Danh Sách Lưu Trữ" subtitle="Sổ tay cá nhân của bạn">
       <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
         {/* 3 Modern Tab Switchers */}
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(3, 1fr)',
           gap: 6,
-          background: 'rgba(255, 255, 255, 0.03)',
+          background: 'var(--bg-secondary)',
           padding: 4,
           borderRadius: '16px',
           border: '1px solid var(--border)',
@@ -51,25 +51,27 @@ function BookmarksContent() {
                   setExpandedId(null);
                 }}
                 style={{
-                  padding: '10px 6px',
+                  padding: '12px 6px',
                   borderRadius: '12px',
-                  border: 'none',
-                  background: isActive ? 'rgba(255, 255, 255, 0.08)' : 'transparent',
-                  color: isActive ? '#ffffff' : 'var(--text-muted)',
-                  fontSize: '0.78rem',
-                  fontWeight: 700,
+                  border: isActive ? '1px solid var(--border)' : '1px solid transparent',
+                  background: isActive ? '#ffffff' : 'transparent',
+                  color: isActive ? 'var(--text-primary)' : 'var(--text-muted)',
+                  fontSize: '0.82rem',
+                  fontWeight: 800,
                   cursor: 'pointer',
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
                   gap: 3,
-                  boxShadow: isActive ? '0 4px 12px rgba(0, 0, 0, 0.3)' : 'none',
+                  boxShadow: isActive ? '0 4px 12px rgba(234, 88, 12, 0.12)' : 'none',
                   transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
                 }}
               >
-                <span style={{ fontSize: '1.1rem' }}>{tab.icon}</span>
-                <span style={{ color: isActive ? tab.color : 'inherit' }}>
-                  {tab.label} ({tab.count})
+                <span style={{ fontSize: '1.25rem', fontWeight: 900, color: tab.color }}>
+                  {tab.count}
+                </span>
+                <span style={{ color: isActive ? tab.color : 'inherit', fontSize: '0.78rem' }}>
+                  {tab.label}
                 </span>
               </button>
             );
@@ -78,18 +80,15 @@ function BookmarksContent() {
 
         {words.length === 0 ? (
           <div className="glass-card" style={{ textAlign: 'center', padding: '48px 20px', color: 'var(--text-muted)' }}>
-            <div style={{ fontSize: '3rem', marginBottom: 12 }}>
-              {activeType === 'starred' ? '⭐' : activeType === 'wrong' ? '🎯' : '💡'}
-            </div>
-            <p style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
+            <p style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: 6 }}>
               Chưa có từ nào trong mục này
             </p>
-            <p style={{ fontSize: '0.8rem', marginTop: 4 }}>
-              Khi học, hãy nhấn nút ⭐ ❌ ➕ để lưu lại từ vựng cần ôn tập.
+            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+              Trong khi học bài, bạn có thể bấm Đã lưu, Cần ôn hoặc Hay quên để gom từ vào đây.
             </p>
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <div className="bookmarks-grid">
             {words.map(word => {
               const isExpanded = expandedId === word.id;
               return (
@@ -113,17 +112,17 @@ function BookmarksContent() {
                     }}
                   >
                     <div>
-                      <p className="jp-text" style={{ fontSize: '1.25rem', fontWeight: 800, color: '#ffffff' }}>
+                      <p className="jp-text" style={{ fontSize: '1.3rem', fontWeight: 900, color: 'var(--text-primary)' }}>
                         {word.kanji}
                       </p>
-                      <p className="jp-text" style={{ fontSize: '0.85rem', color: 'var(--accent-light)', fontWeight: 600 }}>
+                      <p className="jp-text" style={{ fontSize: '0.88rem', color: 'var(--accent-hover)', fontWeight: 700 }}>
                         {word.hiragana}
                       </p>
                     </div>
 
                     <div style={{ textAlign: 'right', display: 'flex', alignItems: 'center', gap: 12 }}>
                       <div>
-                        <p style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
+                        <p style={{ fontSize: '0.92rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
                           {word.meaning}
                         </p>
                         {word.unit && (
@@ -142,7 +141,7 @@ function BookmarksContent() {
                     <div style={{
                       padding: '16px 18px 20px',
                       borderTop: '1px solid var(--border)',
-                      background: 'rgba(0, 0, 0, 0.2)',
+                      background: 'var(--bg-secondary)',
                     }}>
                       <VocabCard word={word} showFull={true} />
                     </div>
@@ -160,8 +159,10 @@ function BookmarksContent() {
 export default function BookmarksPage() {
   return (
     <Suspense fallback={
-      <PageWrapper title="📚 Danh sách lưu trữ">
-        <div style={{ textAlign: 'center', color: 'var(--text-muted)', marginTop: 60 }}>⏳ Đang tải...</div>
+      <PageWrapper title="Danh Sách Lưu Trữ">
+        <div style={{ textAlign: 'center', color: 'var(--text-muted)', marginTop: 60, fontWeight: 600 }}>
+          Đang tải dữ liệu...
+        </div>
       </PageWrapper>
     }>
       <BookmarksContent />

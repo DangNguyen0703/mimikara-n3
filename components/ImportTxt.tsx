@@ -80,7 +80,8 @@ export default function ImportTxt({ onClose }: ImportTxtProps) {
   const [errors, setErrors] = useState<string[]>([]);
   const [importing, setImporting] = useState(false);
   const [done, setDone] = useState(false);
-  const { addImportedWords, clearImported } = useVocabulary();
+  const [overwriteMode, setOverwriteMode] = useState<boolean>(true);
+  const { addImportedWords, clearImported, importedWords } = useVocabulary();
 
   const handleParse = () => {
     sounds.playTap();
@@ -94,7 +95,7 @@ export default function ImportTxt({ onClose }: ImportTxtProps) {
     sounds.playTap();
     setImporting(true);
     setTimeout(() => {
-      addImportedWords(preview);
+      addImportedWords(preview, overwriteMode);
       setImporting(false);
       setDone(true);
       sounds.playFanfare();
@@ -118,34 +119,17 @@ export default function ImportTxt({ onClose }: ImportTxtProps) {
   };
 
   return (
-    <div style={{
-      position: 'fixed',
-      inset: 0,
-      zIndex: 100,
-      background: 'rgba(0, 0, 0, 0.75)',
-      backdropFilter: 'blur(12px)',
-      WebkitBackdropFilter: 'blur(12px)',
-      display: 'flex',
-      alignItems: 'flex-end',
-    }}>
-      <div className="animate-fade-in" style={{
-        background: '#12141f',
-        borderRadius: '24px 24px 0 0',
-        width: '100%',
-        maxHeight: '90dvh',
-        overflowY: 'auto',
-        padding: '24px 20px',
-        paddingBottom: 'calc(env(safe-area-inset-bottom, 20px) + 20px)',
-        borderTop: '1px solid rgba(255, 255, 255, 0.12)',
-        boxShadow: '0 -10px 40px rgba(0, 0, 0, 0.6)',
-      }}>
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-sheet animate-scale-in" onClick={e => e.stopPropagation()}>
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize: '1.3rem' }}>📥</span>
-            <h2 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#ffffff' }}>
-              Import từ vựng .TXT
+          <div>
+            <h2 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-primary)', lineHeight: 1.2 }}>
+              Import Từ Vựng .TXT
             </h2>
+            <p style={{ fontSize: '0.74rem', color: 'var(--text-muted)', marginTop: 2 }}>
+              Nạp danh sách từ tùy chỉnh vào ứng dụng
+            </p>
           </div>
           <button
             className="btn-secondary btn"
@@ -153,23 +137,34 @@ export default function ImportTxt({ onClose }: ImportTxtProps) {
               sounds.playTap();
               onClose();
             }}
-            style={{ width: 32, height: 32, padding: 0, borderRadius: '50%', fontSize: '0.85rem' }}
+            style={{ width: 32, height: 32, padding: 0, borderRadius: '50%', fontSize: '0.9rem', color: 'var(--text-secondary)' }}
           >
             ✕
           </button>
         </div>
 
         {done ? (
-          <div style={{ textAlign: 'center', padding: '32px 0' }}>
-            <div style={{ fontSize: '3.5rem', marginBottom: 12 }}>🎉</div>
-            <p style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--emerald)', marginBottom: 6 }}>
-              Import thành công {preview?.length} từ!
+          <div style={{ textAlign: 'center', padding: '28px 0' }}>
+            <p style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--accent-hover)', marginBottom: 6 }}>
+              Đã nạp thành công {preview?.length} từ vựng
             </p>
-            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: 20 }}>
-              Dữ liệu được lưu vĩnh viễn trong bộ nhớ LocalStorage của trình duyệt này.
-            </p>
-            <button className="btn btn-primary" onClick={onClose} style={{ padding: '12px 28px' }}>
-              Bắt đầu học ngay
+            <div style={{
+              background: 'var(--bg-secondary)',
+              border: '1px solid var(--border)',
+              borderRadius: '14px',
+              padding: '14px 18px',
+              margin: '16px auto 20px',
+              maxWidth: 420,
+            }}>
+              <p style={{ fontSize: '0.85rem', color: 'var(--emerald)', fontWeight: 700, marginBottom: 4 }}>
+                Đã tự động chuyển sang Tab: Bộ Import ({preview?.length} từ)
+              </p>
+              <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', lineHeight: 1.4 }}>
+                Dữ liệu được lưu trong trình duyệt. Bạn có thể bắt đầu học ngay trên toàn bộ các chế độ.
+              </p>
+            </div>
+            <button className="btn btn-primary" onClick={onClose} style={{ padding: '12px 36px', fontSize: '0.95rem' }}>
+              Bắt đầu học bài ngay
             </button>
           </div>
         ) : (
@@ -179,40 +174,40 @@ export default function ImportTxt({ onClose }: ImportTxtProps) {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: 10,
+              gap: 8,
               padding: '16px',
-              background: 'rgba(139, 92, 246, 0.08)',
-              border: '2px dashed rgba(139, 92, 246, 0.35)',
-              borderRadius: '16px',
+              background: 'rgba(254, 215, 170, 0.25)',
+              border: '1.5px dashed var(--accent)',
+              borderRadius: '14px',
               cursor: 'pointer',
               marginBottom: 14,
-              fontSize: '0.9rem',
-              fontWeight: 600,
-              color: 'var(--accent-light)',
+              fontSize: '0.92rem',
+              fontWeight: 700,
+              color: 'var(--accent-hover)',
               transition: 'all 0.2s',
             }}>
-              <span>📁 Chọn file từ vựng .txt</span>
+              <span>Chọn file từ vựng .txt từ máy tính</span>
               <input type="file" accept=".txt" onChange={handleFileUpload} style={{ display: 'none' }} />
             </label>
 
             {/* Textarea */}
-            <p style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6, textTransform: 'uppercase' }}>
-              HOẶC DÁN NỘI DUNG VÀO ĐÂY:
+            <p style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              HOẶC DÁN NỘI DUNG VĂN BẢN VÀO ĐÂY:
             </p>
             <textarea
               value={text}
               onChange={e => setText(e.target.value)}
               placeholder={`=== UNIT 1: Danh từ A ===\nKanji: 男性\nHiragana: だんせい\nNghĩa: Nam giới, đàn ông\nHánViệt: NAM TÍNH\n---`}
-              rows={7}
+              rows={6}
               style={{
                 width: '100%',
-                background: 'rgba(255, 255, 255, 0.03)',
-                border: '1px solid var(--border)',
+                background: '#fffdfa',
+                border: '1.5px solid var(--border)',
                 borderRadius: '14px',
                 padding: '14px',
-                color: '#ffffff',
+                color: 'var(--text-primary)',
                 fontFamily: 'Noto Sans JP, monospace',
-                fontSize: '0.82rem',
+                fontSize: '0.85rem',
                 resize: 'vertical',
                 outline: 'none',
                 marginBottom: 12,
@@ -224,35 +219,78 @@ export default function ImportTxt({ onClose }: ImportTxtProps) {
               style={{ width: '100%', marginBottom: 14, padding: '12px' }}
               onClick={handleParse}
             >
-              🔍 Kiểm tra định dạng
+              Kiểm tra định dạng & Đếm số từ
             </button>
 
             {errors.length > 0 && (
               <div style={{
                 marginBottom: 14,
                 padding: '10px 14px',
-                background: 'rgba(244, 63, 94, 0.1)',
-                border: '1px solid rgba(244, 63, 94, 0.25)',
+                background: 'var(--rose-dim)',
+                border: '1px solid rgba(225, 29, 72, 0.25)',
                 borderRadius: '10px',
               }}>
                 {errors.map((e, i) => (
-                  <p key={i} style={{ fontSize: '0.75rem', color: 'var(--rose)' }}>⚠ {e}</p>
+                  <p key={i} style={{ fontSize: '0.75rem', color: 'var(--rose)', fontWeight: 600 }}>• {e}</p>
                 ))}
               </div>
             )}
 
             {preview !== null && (
               <div style={{ marginBottom: 16 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                  <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                    Nhận diện được: <strong style={{ color: 'var(--emerald)' }}>{preview.length} từ vựng</strong>
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: 10,
+                  padding: '8px 12px',
+                  background: 'var(--emerald-dim)',
+                  borderRadius: '10px',
+                }}>
+                  <span style={{ fontSize: '0.88rem', color: 'var(--emerald)', fontWeight: 700 }}>
+                    Nhận diện hợp lệ: {preview.length} từ vựng
                   </span>
+                </div>
+
+                {/* Overwrite vs Append Options */}
+                <div style={{
+                  marginBottom: 12,
+                  padding: '10px 14px',
+                  background: 'var(--bg-secondary)',
+                  borderRadius: '12px',
+                  border: '1px solid var(--border)',
+                }}>
+                  <p style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: 8, textTransform: 'uppercase' }}>
+                    CHỌN CÁCH NẠP DỮ LIỆU:
+                  </p>
+                  <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.82rem', cursor: 'pointer', fontWeight: 600 }}>
+                      <input
+                        type="radio"
+                        name="importMode"
+                        checked={overwriteMode}
+                        onChange={() => setOverwriteMode(true)}
+                        style={{ accentColor: 'var(--accent)' }}
+                      />
+                      <span>Ghi đè mới toàn bộ {preview.length} từ</span>
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.82rem', cursor: 'pointer', fontWeight: 600 }}>
+                      <input
+                        type="radio"
+                        name="importMode"
+                        checked={!overwriteMode}
+                        onChange={() => setOverwriteMode(false)}
+                        style={{ accentColor: 'var(--accent)' }}
+                      />
+                      <span>Thêm nối tiếp (+{preview.length} từ)</span>
+                    </label>
+                  </div>
                 </div>
 
                 <div style={{
                   maxHeight: 180,
                   overflowY: 'auto',
-                  background: 'rgba(0, 0, 0, 0.3)',
+                  background: '#ffffff',
                   border: '1px solid var(--border)',
                   borderRadius: '12px',
                   padding: '10px 14px',
@@ -263,17 +301,17 @@ export default function ImportTxt({ onClose }: ImportTxtProps) {
                       display: 'flex',
                       gap: 12,
                       padding: '6px 0',
-                      borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
+                      borderBottom: '1px solid var(--border)',
                       fontSize: '0.82rem',
                       alignItems: 'center',
                     }}>
-                      <span className="jp-text" style={{ color: '#ffffff', fontWeight: 700, minWidth: 60 }}>{w.kanji}</span>
-                      <span className="jp-text" style={{ color: 'var(--accent-light)', minWidth: 80 }}>{w.hiragana}</span>
+                      <span className="jp-text" style={{ color: 'var(--text-primary)', fontWeight: 800, minWidth: 65 }}>{w.kanji}</span>
+                      <span className="jp-text" style={{ color: 'var(--accent-hover)', minWidth: 80, fontWeight: 600 }}>{w.hiragana}</span>
                       <span style={{ color: 'var(--text-secondary)', flex: 1 }}>{w.meaning}</span>
                     </div>
                   ))}
                   {preview.length > 8 && (
-                    <p style={{ color: 'var(--text-muted)', fontSize: '0.75rem', padding: '6px 0', textAlign: 'center' }}>
+                    <p style={{ color: 'var(--text-muted)', fontSize: '0.75rem', padding: '6px 0', textAlign: 'center', fontWeight: 500 }}>
                       ...và {preview.length - 8} từ khác
                     </p>
                   )}
@@ -285,7 +323,7 @@ export default function ImportTxt({ onClose }: ImportTxtProps) {
                   onClick={handleImport}
                   disabled={importing || preview.length === 0}
                 >
-                  {importing ? '⏳ Đang import vào kho...' : `✅ Xác nhận thêm ${preview.length} từ`}
+                  {importing ? 'Đang lưu vào hệ thống...' : `Xác nhận nạp ${preview.length} từ vào ứng dụng`}
                 </button>
               </div>
             )}
@@ -294,35 +332,37 @@ export default function ImportTxt({ onClose }: ImportTxtProps) {
             <div style={{
               marginTop: 14,
               padding: '12px 14px',
-              background: 'rgba(255, 255, 255, 0.02)',
+              background: 'var(--bg-secondary)',
               border: '1px solid var(--border)',
               borderRadius: '12px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
               fontSize: '0.75rem',
-              color: 'var(--text-muted)',
+              color: 'var(--text-secondary)',
             }}>
-              <span>💾 Lưu vĩnh viễn trên trình duyệt của bạn</span>
-              <button
-                onClick={() => {
-                  if (confirm('Bạn có chắc muốn xóa tất cả từ vựng bạn đã tự import thêm? (Danh sách 687 từ gốc vẫn được giữ nguyên)')) {
-                    clearImported();
-                    sounds.playTap();
-                    alert('Đã xóa các từ tự import!');
-                  }
-                }}
-                style={{
-                  background: 'transparent',
-                  border: 'none',
-                  color: 'var(--rose)',
-                  cursor: 'pointer',
-                  fontSize: '0.72rem',
-                  fontWeight: 600,
-                }}
-              >
-                🗑️ Xóa từ đã import
-              </button>
+              <span>Dữ liệu được lưu an toàn trên trình duyệt của bạn</span>
+              {importedWords.length > 0 && (
+                <button
+                  onClick={() => {
+                    if (confirm('Bạn có chắc muốn xóa tất cả từ vựng bạn đã tự import thêm? (Danh sách 687 từ gốc vẫn được giữ nguyên)')) {
+                      clearImported();
+                      sounds.playTap();
+                      alert('Đã xóa các từ tự import!');
+                    }
+                  }}
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    color: 'var(--rose)',
+                    cursor: 'pointer',
+                    fontSize: '0.74rem',
+                    fontWeight: 700,
+                  }}
+                >
+                  Xóa từ đã import ({importedWords.length})
+                </button>
+              )}
             </div>
           </>
         )}

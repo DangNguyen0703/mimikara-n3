@@ -84,10 +84,9 @@ export default function VocabCard({
             style={{
               fontSize: 'clamp(2.6rem, 11vw, 3.8rem)',
               fontWeight: 900,
-              color: '#ffffff',
+              color: 'var(--text-primary)',
               lineHeight: 1.15,
               letterSpacing: '0.02em',
-              textShadow: '0 2px 16px rgba(139, 92, 246, 0.25)',
               cursor: hideKanji ? 'pointer' : 'default',
             }}
             onClick={() => hideKanji && setRevealedKanji(false)}
@@ -101,22 +100,22 @@ export default function VocabCard({
               setRevealedKanji(true);
             }}
             style={{
-              background: 'rgba(139, 92, 246, 0.1)',
-              border: '1.5px dashed rgba(139, 92, 246, 0.4)',
+              background: 'rgba(254, 215, 170, 0.35)',
+              border: '1.5px dashed var(--accent)',
               borderRadius: '16px',
               padding: '16px 24px',
-              color: 'var(--accent-light)',
-              fontSize: '1.1rem',
+              color: 'var(--accent-hover)',
+              fontSize: '1.05rem',
               fontWeight: 700,
               cursor: 'pointer',
               margin: '8px auto',
               display: 'inline-flex',
               alignItems: 'center',
-              gap: 8,
+              justifyContent: 'center',
               transition: 'all 0.2s',
             }}
           >
-            <span>🙈</span> Chạm để hiện Kanji
+            Chạm để hiện Kanji
           </button>
         )}
 
@@ -124,9 +123,9 @@ export default function VocabCard({
           <p
             className="jp-text animate-fade-in"
             style={{
-              fontSize: '1.2rem',
-              fontWeight: 600,
-              color: 'var(--accent-light)',
+              fontSize: '1.25rem',
+              fontWeight: 800,
+              color: 'var(--accent-hover)',
               marginTop: 6,
               cursor: hideHiragana ? 'pointer' : 'default',
             }}
@@ -142,17 +141,17 @@ export default function VocabCard({
                 setRevealedHiragana(true);
               }}
               style={{
-                background: 'rgba(255, 255, 255, 0.05)',
+                background: 'var(--bg-secondary)',
                 border: '1px dashed var(--border)',
                 borderRadius: '9999px',
-                padding: '4px 14px',
-                color: 'var(--text-muted)',
+                padding: '5px 16px',
+                color: 'var(--text-secondary)',
                 fontSize: '0.8rem',
                 fontWeight: 600,
                 cursor: 'pointer',
               }}
             >
-              👁️ Hiện Hiragana
+              Hiện Hiragana
             </button>
           </div>
         )}
@@ -163,25 +162,25 @@ export default function VocabCard({
         <div
           className="animate-fade-in"
           style={{
-            background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.18), rgba(56, 189, 248, 0.08))',
-            border: '1px solid rgba(139, 92, 246, 0.3)',
-            borderRadius: '12px',
+            background: 'linear-gradient(135deg, rgba(254, 215, 170, 0.45) 0%, rgba(255, 237, 213, 0.6) 100%)',
+            border: '1px solid rgba(249, 115, 22, 0.25)',
+            borderRadius: '14px',
             padding: '12px 16px',
             marginBottom: 14,
             textAlign: 'center',
-            boxShadow: '0 4px 20px -4px rgba(139, 92, 246, 0.15)',
+            boxShadow: '0 4px 14px -4px rgba(234, 88, 12, 0.12)',
             cursor: hideMeaning ? 'pointer' : 'default',
           }}
           onClick={() => hideMeaning && setRevealedMeaning(false)}
         >
-          <p style={{ fontSize: '1.05rem', fontWeight: 700, color: '#f8fafc' }}>
+          <p style={{ fontSize: '1.08rem', fontWeight: 800, color: 'var(--text-primary)' }}>
             {word.meaning}
           </p>
           {word.hanViet && (
             <p style={{
-              fontSize: '0.75rem',
-              fontWeight: 600,
-              color: 'var(--accent-light)',
+              fontSize: '0.76rem',
+              fontWeight: 700,
+              color: 'var(--accent-hover)',
               marginTop: 3,
               letterSpacing: '0.06em',
               textTransform: 'uppercase',
@@ -199,17 +198,17 @@ export default function VocabCard({
             }}
             style={{
               width: '100%',
-              background: 'rgba(56, 189, 248, 0.08)',
-              border: '1.5px dashed rgba(56, 189, 248, 0.35)',
+              background: 'rgba(254, 215, 170, 0.3)',
+              border: '1.5px dashed var(--accent)',
               borderRadius: '12px',
               padding: '12px 16px',
-              color: 'var(--sky)',
+              color: 'var(--accent-hover)',
               fontSize: '0.9rem',
-              fontWeight: 600,
+              fontWeight: 700,
               cursor: 'pointer',
             }}
           >
-            👁️ Chạm để hiện Nghĩa tiếng Việt
+            Chạm để hiện Nghĩa tiếng Việt
           </button>
         </div>
       )}
@@ -218,16 +217,16 @@ export default function VocabCard({
       {showFull && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 14 }}>
           {word.usage && (
-            <InfoRow icon="💬" label="Ví dụ / Cách dùng" value={word.usage} isJp onSpeak={() => speakJapanese(word.usage!)} />
+            <InfoRow tag="Ví dụ" label="Cách dùng" value={word.usage} isJp onSpeak={() => speakJapanese(word.usage!)} />
           )}
           {word.antonym && (
-            <InfoRow icon="↔️" label="Từ trái nghĩa" value={`${word.antonym} (${lookupInfo(word.antonym)})`} isJp onSpeak={() => speakJapanese(word.antonym!)} />
+            <InfoRow tag="Trái nghĩa" label="Từ trái nghĩa" value={`${word.antonym} (${lookupInfo(word.antonym)})`} isJp onSpeak={() => speakJapanese(word.antonym!)} />
           )}
           {word.related && word.related.length > 0 && (
-            <InfoRow icon="🔗" label="Từ liên quan" value={word.related.join('、')} isJp />
+            <InfoRow tag="Liên quan" label="Từ liên quan" value={word.related.join('、')} isJp />
           )}
           {word.similar && word.similar.length > 0 && (
-            <InfoRow icon="⚠️" label="Dễ nhầm lẫn" value={word.similar.join('、')} isJp />
+            <InfoRow tag="Dễ nhầm" label="Dễ nhầm lẫn" value={word.similar.join('、')} isJp />
           )}
         </div>
       )}
@@ -241,9 +240,8 @@ export default function VocabCard({
             sounds.playTap();
             toggle(word.id, 'starred');
           }}
-          icon="⭐"
-          label="Đánh dấu"
-          activeColor="#f59e0b"
+          label="Đã lưu"
+          activeColor="#d97706"
         />
         <BookmarkBtn
           active={has(word.id, 'wrong')}
@@ -252,9 +250,8 @@ export default function VocabCard({
             sounds.playTap();
             toggle(word.id, 'wrong');
           }}
-          icon="❌"
-          label="Sai"
-          activeColor="#f43f5e"
+          label="Cần ôn"
+          activeColor="#e11d48"
         />
         <BookmarkBtn
           active={has(word.id, 'forgettable')}
@@ -263,17 +260,16 @@ export default function VocabCard({
             sounds.playTap();
             toggle(word.id, 'forgettable');
           }}
-          icon="➕"
           label="Hay quên"
-          activeColor="#38bdf8"
+          activeColor="#0284c7"
         />
       </div>
     </div>
   );
 }
 
-function InfoRow({ icon, label, value, isJp, onSpeak }: {
-  icon: string;
+function InfoRow({ tag, label, value, isJp, onSpeak }: {
+  tag: string;
   label: string;
   value: string;
   isJp?: boolean;
@@ -285,18 +281,30 @@ function InfoRow({ icon, label, value, isJp, onSpeak }: {
       alignItems: 'center',
       justifyContent: 'space-between',
       gap: 10,
-      padding: '8px 12px',
-      background: 'rgba(255, 255, 255, 0.03)',
-      border: '1px solid rgba(255, 255, 255, 0.06)',
+      padding: '9px 12px',
+      background: 'rgba(255, 255, 255, 0.95)',
+      border: '1px solid var(--border)',
       borderRadius: '10px',
     }}>
       <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start', minWidth: 0, flex: 1 }}>
-        <span style={{ fontSize: '0.9rem', flexShrink: 0, marginTop: 1 }}>{icon}</span>
+        <span style={{
+          fontSize: '0.66rem',
+          fontWeight: 800,
+          color: 'var(--accent-hover)',
+          background: 'rgba(254, 215, 170, 0.35)',
+          padding: '2px 6px',
+          borderRadius: '6px',
+          flexShrink: 0,
+          marginTop: 2,
+          letterSpacing: '0.02em',
+        }}>
+          {tag}
+        </span>
         <div style={{ minWidth: 0 }}>
-          <span style={{ fontSize: '0.68rem', fontWeight: 600, color: 'var(--text-muted)', display: 'block', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+          <span style={{ fontSize: '0.68rem', fontWeight: 700, color: 'var(--text-muted)', display: 'block', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
             {label}
           </span>
-          <span className={isJp ? 'jp-text' : ''} style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', wordBreak: 'break-word', fontWeight: 500 }}>
+          <span className={isJp ? 'jp-text' : ''} style={{ fontSize: '0.88rem', color: 'var(--text-primary)', wordBreak: 'break-word', fontWeight: 600 }}>
             {value}
           </span>
         </div>
@@ -307,7 +315,7 @@ function InfoRow({ icon, label, value, isJp, onSpeak }: {
           style={{
             background: 'transparent',
             border: 'none',
-            color: 'var(--text-muted)',
+            color: 'var(--accent-hover)',
             cursor: 'pointer',
             padding: 4,
             display: 'flex',
@@ -326,10 +334,9 @@ function InfoRow({ icon, label, value, isJp, onSpeak }: {
   );
 }
 
-function BookmarkBtn({ active, onClick, icon, label, activeColor }: {
+function BookmarkBtn({ active, onClick, label, activeColor }: {
   active: boolean;
   onClick: (e: React.MouseEvent) => void;
-  icon: string;
   label: string;
   activeColor: string;
 }) {
@@ -339,19 +346,19 @@ function BookmarkBtn({ active, onClick, icon, label, activeColor }: {
       style={{
         display: 'flex',
         alignItems: 'center',
-        gap: 6,
-        padding: '8px 14px',
+        justifyContent: 'center',
+        padding: '8px 18px',
         borderRadius: '9999px',
-        border: `1px solid ${active ? activeColor + '80' : 'rgba(255, 255, 255, 0.08)'}`,
-        background: active ? activeColor + '18' : 'rgba(255, 255, 255, 0.03)',
-        color: active ? activeColor : 'var(--text-muted)',
+        border: `1.5px solid ${active ? activeColor : 'var(--border)'}`,
+        background: active ? activeColor : '#ffffff',
+        color: active ? '#ffffff' : 'var(--text-secondary)',
         cursor: 'pointer',
         transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
-        fontSize: '0.78rem',
-        fontWeight: 600,
+        fontSize: '0.8rem',
+        fontWeight: 700,
+        boxShadow: active ? `0 4px 12px ${activeColor}40` : '0 2px 6px rgba(0, 0, 0, 0.03)',
       }}
     >
-      <span style={{ fontSize: '0.95rem' }}>{icon}</span>
       <span>{label}</span>
     </button>
   );

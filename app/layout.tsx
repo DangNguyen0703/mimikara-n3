@@ -2,8 +2,8 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Mimikara N3 | Học từ vựng tiếng Nhật',
-  description: 'Ứng dụng học từ vựng tiếng Nhật N3 từ bộ Mimikara Oboeru. 687 từ vựng với flashcard, quiz, luyện gõ, viết và nhiều chế độ học khác.',
+  title: 'Mimikara N3 | Học Từ Vựng Tiếng Nhật',
+  description: 'Không gian học từ vựng tiếng Nhật N3 bình yên & tràn đầy cảm hứng. Bộ thẻ 3D, Quiz, Luyện gõ và hỗ trợ nạp thêm bộ từ vựng cá nhân.',
   keywords: ['tiếng Nhật', 'N3', 'từ vựng', 'Mimikara', 'JLPT', 'flashcard'],
   authors: [{ name: 'Mimikara N3' }],
 };
@@ -14,7 +14,7 @@ export const viewport: Viewport = {
   maximumScale: 1,
   userScalable: false,
   viewportFit: 'cover',
-  themeColor: '#0f0f13',
+  themeColor: '#fffaf5',
 };
 
 export default function RootLayout({
