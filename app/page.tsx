@@ -524,6 +524,7 @@ export default function HomePage() {
                 {allWords.length} từ
               </span>
             </button>
+            )}
           </div>
         </div>
 
