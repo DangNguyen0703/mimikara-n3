@@ -82,7 +82,7 @@ export default function ImportTxt({ onClose }: ImportTxtProps) {
   const [errors, setErrors] = useState<string[]>([]);
   const [importing, setImporting] = useState(false);
   const [done, setDone] = useState(false);
-  const [overwriteMode, setOverwriteMode] = useState<boolean>(true);
+  const [overwriteMode, setOverwriteMode] = useState<boolean>(false);
   const { addImportedWords, clearImported, importedWords } = useVocabulary();
 
   const handleParse = () => {
