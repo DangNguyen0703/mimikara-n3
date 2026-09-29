@@ -4,7 +4,7 @@ import { vocabulary } from '@/data/vocabulary';
 import { VocabWord } from '@/types/vocabulary';
 import { useLocalStorage } from './useLocalStorage';
 
-export type VocabSource = 'imported' | 'default' | 'all';
+export type VocabSource = string;
 
 export function useVocabulary() {
   const [limit, setLimit] = useLocalStorage<number>('study_limit', 50);
@@ -26,18 +26,31 @@ export function useVocabulary() {
     return [...defaultWords, ...importedWords];
   }, [defaultWords, importedWords]);
 
+  const importedDatasets = useMemo(() => {
+    const sets = new Set<string>();
+    importedWords.forEach(w => sets.add(w.dataset || 'Bộ Import'));
+    return Array.from(sets);
+  }, [importedWords]);
+
   // Determine which dataset is actively selected
   const activeWords = useMemo(() => {
-    if (vocabSource === 'imported') {
-      return importedWords.length > 0 ? importedWords : defaultWords;
-    }
     if (vocabSource === 'all') {
       return allWords.length > 0 ? allWords : (importedWords.length > 0 ? importedWords : defaultWords);
     }
-    // 'default'
-    if (defaultWords.length === 0 && importedWords.length > 0) {
-      return importedWords;
+    if (vocabSource === 'default') {
+      return defaultWords;
     }
+    
+    // Check if it's a specific dataset name
+    const matchingWords = importedWords.filter(w => (w.dataset || 'Bộ Import') === vocabSource);
+    if (matchingWords.length > 0) return matchingWords;
+    
+    // Fallback if vocabSource is invalid or the dataset was just deleted
+    if (importedWords.length > 0) {
+      const firstDataset = importedWords[0].dataset || 'Bộ Import';
+      return importedWords.filter(w => (w.dataset || 'Bộ Import') === firstDataset);
+    }
+    
     return defaultWords;
   }, [vocabSource, importedWords, defaultWords, allWords]);
 
@@ -76,8 +89,9 @@ export function useVocabulary() {
         return [...prev, ...mapped];
       });
     }
-    // Auto switch to imported tab so user immediately sees their imported words!
-    setVocabSourceState('imported');
+    // Auto switch to the new dataset tab
+    const newDatasetName = words.length > 0 ? (words[0].dataset || 'Bộ Import') : 'Bộ Import';
+    setVocabSourceState(newDatasetName);
   }, [setImportedWords, setVocabSourceState]);
 
   const deleteImportedWord = useCallback((id: number) => {
@@ -94,14 +108,19 @@ export function useVocabulary() {
     setDeletedDefaultIds(prev => [...new Set([...prev, id])]);
   }, [setImportedWords, setDeletedDefaultIds]);
 
+  const deleteDataset = useCallback((datasetName: string) => {
+    setImportedWords(prev => prev.filter(w => (w.dataset || 'Bộ Import') !== datasetName));
+    setVocabSourceState('all');
+  }, [setImportedWords, setVocabSourceState]);
+
   const clearImported = useCallback(() => {
     setImportedWords([]);
-    setVocabSourceState(defaultDeleted ? 'imported' : 'default');
-  }, [setImportedWords, setVocabSourceState, defaultDeleted]);
+    setVocabSourceState('default');
+  }, [setImportedWords, setVocabSourceState]);
 
   const deleteDefaultWords = useCallback(() => {
     setDefaultDeleted(true);
-    setVocabSourceState('imported');
+    setVocabSourceState('all');
   }, [setDefaultDeleted, setVocabSourceState]);
 
   const restoreDefaultWords = useCallback(() => {
@@ -127,10 +146,12 @@ export function useVocabulary() {
     deleteDefaultWord,
     deleteWord,
     clearImported,
+    deleteDataset,
     deleteDefaultWords,
     restoreDefaultWords,
     isUnlocked,
     setIsUnlocked,
+    importedDatasets,
   };
 }
 

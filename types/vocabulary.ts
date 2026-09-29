@@ -9,4 +9,5 @@ export interface VocabWord {
   related?: string[];
   similar?: string[];
   unit?: string;
+  dataset?: string;
 }

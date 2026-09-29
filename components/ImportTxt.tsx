@@ -9,7 +9,7 @@ interface ImportTxtProps {
   onClose: () => void;
 }
 
-function parseTxt(text: string): { words: VocabWord[]; errors: string[] } {
+function parseTxt(text: string, datasetName: string): { words: VocabWord[]; errors: string[] } {
   const lines = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
   const words: VocabWord[] = [];
   const errors: string[] = [];
@@ -29,7 +29,8 @@ function parseTxt(text: string): { words: VocabWord[]; errors: string[] } {
         usage: currentWord.usage,
         related: currentWord.related,
         similar: currentWord.similar,
-        unit: currentUnit || 'Imported',
+        unit: currentUnit || 'Khác',
+        dataset: datasetName,
       });
     } else if (currentWord.kanji) {
       errors.push(`Thiếu thông tin bắt buộc cho từ: ${currentWord.kanji}`);
@@ -76,6 +77,7 @@ function parseTxt(text: string): { words: VocabWord[]; errors: string[] } {
 
 export default function ImportTxt({ onClose }: ImportTxtProps) {
   const [text, setText] = useState('');
+  const [datasetName, setDatasetName] = useState('Bộ Import');
   const [preview, setPreview] = useState<VocabWord[] | null>(null);
   const [errors, setErrors] = useState<string[]>([]);
   const [importing, setImporting] = useState(false);
@@ -85,7 +87,7 @@ export default function ImportTxt({ onClose }: ImportTxtProps) {
 
   const handleParse = () => {
     sounds.playTap();
-    const result = parseTxt(text);
+    const result = parseTxt(text, datasetName || 'Bộ Import');
     setPreview(result.words);
     setErrors(result.errors);
   };
@@ -107,11 +109,14 @@ export default function ImportTxt({ onClose }: ImportTxtProps) {
     const file = e.target.files?.[0];
     if (!file) return;
     sounds.playTap();
+    const name = file.name.replace('.txt', '');
+    setDatasetName(name);
+    
     const reader = new FileReader();
     reader.onload = ev => {
       const content = ev.target?.result as string;
       setText(content);
-      const result = parseTxt(content);
+      const result = parseTxt(content, name);
       setPreview(result.words);
       setErrors(result.errors);
     };
@@ -189,6 +194,29 @@ export default function ImportTxt({ onClose }: ImportTxtProps) {
               <span>Chọn file từ vựng .txt từ máy tính</span>
               <input type="file" accept=".txt" onChange={handleFileUpload} style={{ display: 'none' }} />
             </label>
+
+            {/* Dataset Name Input */}
+            <p style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              TÊN BỘ TỪ VỰNG:
+            </p>
+            <input
+              type="text"
+              value={datasetName}
+              onChange={e => setDatasetName(e.target.value)}
+              placeholder="VD: Mimikara N3, Soumatome..."
+              style={{
+                width: '100%',
+                background: '#fffdfa',
+                border: '1.5px solid var(--border)',
+                borderRadius: '12px',
+                padding: '12px 14px',
+                color: 'var(--text-primary)',
+                fontSize: '0.85rem',
+                fontWeight: 600,
+                outline: 'none',
+                marginBottom: 14,
+              }}
+            />
 
             {/* Textarea */}
             <p style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.04em' }}>

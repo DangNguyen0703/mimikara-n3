@@ -74,18 +74,21 @@ export default function HomePage() {
     vocabSource,
     setVocabSource,
     clearImported,
+    deleteDataset,
     deleteDefaultWords,
     restoreDefaultWords,
     limit,
     setLimit,
     isUnlocked,
     setIsUnlocked,
+    importedDatasets,
   } = useVocabulary();
 
   const { starred, wrong, forgettable } = useBookmarks();
   const [showImport, setShowImport] = useState(false);
   const [showImportedList, setShowImportedList] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [datasetToDelete, setDatasetToDelete] = useState<string | null>(null);
   const [showDeleteDefaultConfirm, setShowDeleteDefaultConfirm] = useState(false);
   const [soundActive, setSoundActive] = useState(true);
   const [mounted, setMounted] = useState(false);
@@ -113,8 +116,12 @@ export default function HomePage() {
   };
 
   const confirmDeleteImported = () => {
-    clearImported();
-    setVocabSource(defaultDeleted ? 'imported' : 'default');
+    if (datasetToDelete) {
+      deleteDataset(datasetToDelete);
+    } else {
+      clearImported();
+    }
+    setDatasetToDelete(null);
     setShowDeleteConfirm(false);
     sounds.playTap();
   };
@@ -168,10 +175,10 @@ export default function HomePage() {
             <p style={{ color: 'var(--text-muted)', fontSize: '0.78rem', marginTop: 4, fontWeight: 600 }}>
               {mounted ? (
                 <>
-                  {vocabSource === 'imported' ? (
+                  {importedDatasets.length > 0 ? (
                     <>
-                      <strong style={{ color: 'var(--accent-hover)' }}>{importedWords.length} từ vựng</strong>
-                      {' • Bộ Import'}
+                      <strong style={{ color: 'var(--accent-hover)' }}>{activeWords.length} từ vựng</strong>
+                      {' • ' + (vocabSource === 'all' ? 'Tất cả kết hợp' : vocabSource === 'default' ? '耳から覚える' : vocabSource)}
                     </>
                   ) : vocabSource === 'default' ? (
                     <>
@@ -306,7 +313,7 @@ export default function HomePage() {
             </span>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <span style={{ fontSize: '0.76rem', color: 'var(--accent-hover)', fontWeight: 700 }}>
-                {vocabSource === 'imported' ? 'Đang chọn: Bộ Import' : vocabSource === 'default' ? 'Đang chọn: Gốc Mimikara' : 'Đang chọn: Tất cả'}
+                Đang chọn: {vocabSource === 'default' ? 'Gốc Mimikara' : vocabSource === 'all' ? 'Tất cả' : vocabSource}
               </span>
 
               {/* Delete Lock Button */}
@@ -352,10 +359,13 @@ export default function HomePage() {
                 </button>
               )}
 
-              {/* Delete Imported Button with Confirmation */}
+              {/* Delete All Imported Button with Confirmation */}
               {isUnlocked && importedWords.length > 0 && (
                 <button
-                  onClick={() => setShowDeleteConfirm(true)}
+                  onClick={() => {
+                    setDatasetToDelete(null);
+                    setShowDeleteConfirm(true);
+                  }}
                   style={{
                     background: 'var(--rose-dim)',
                     border: '1px solid rgba(225, 29, 72, 0.25)',
@@ -367,9 +377,9 @@ export default function HomePage() {
                     cursor: 'pointer',
                     transition: 'all 0.15s',
                   }}
-                  title="Xóa bộ từ đã import"
+                  title="Xóa TOÀN BỘ từ đã import"
                 >
-                  Xóa bộ import ({importedWords.length})
+                  Xóa tất cả import ({importedWords.length})
                 </button>
               )}
             </div>
@@ -377,66 +387,75 @@ export default function HomePage() {
 
           <div style={{
             display: 'grid',
-            gridTemplateColumns: defaultDeleted ? '1fr' : 'repeat(3, 1fr)',
+            gridTemplateColumns: `repeat(${(defaultDeleted ? 0 : 2) + (importedDatasets.length > 0 ? importedDatasets.length : 1)}, 1fr)`,
             gap: 8,
             background: 'var(--bg-secondary)',
             padding: 6,
             borderRadius: '14px',
             border: '1px solid var(--border)',
+            overflowX: 'auto',
           }}>
-            {/* Tab: Imported Words */}
-            <button
-              onClick={() => handleSourceSelect('imported')}
-              style={{
-                padding: '12px 10px',
-                borderRadius: '10px',
-                border: vocabSource === 'imported' ? '1px solid var(--accent)' : '1px solid transparent',
-                background: vocabSource === 'imported' ? 'linear-gradient(135deg, #f97316, #ea580c)' : '#ffffff',
-                color: vocabSource === 'imported' ? '#ffffff' : 'var(--text-primary)',
-                fontWeight: 800,
-                fontSize: '0.85rem',
-                cursor: 'pointer',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: 4,
-                boxShadow: vocabSource === 'imported' ? '0 4px 14px rgba(234, 88, 12, 0.35)' : '0 1px 3px rgba(0, 0, 0, 0.03)',
-                transition: 'all 0.2s',
-                position: 'relative',
-              }}
-            >
-              <span>Bộ Import</span>
-              <span style={{
-                fontSize: '0.72rem',
-                opacity: vocabSource === 'imported' ? 0.95 : 0.65,
-                fontWeight: 700,
-              }}>
-                {mounted ? (importedWords.length > 0 ? `${importedWords.length} từ` : 'Chưa nạp từ') : '...'}
-              </span>
-              {mounted && isUnlocked && importedWords.length > 0 && (
-                <span
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    sounds.playTap();
-                    setShowDeleteConfirm(true);
-                  }}
+            {/* Tab: Imported Words (Dynamic Datasets) */}
+            {(importedDatasets.length > 0 ? importedDatasets : ['Bộ Import']).map(dataset => {
+              const datasetWordsCount = importedWords.filter(w => (w.dataset || 'Bộ Import') === dataset).length;
+              return (
+                <button
+                  key={dataset}
+                  onClick={() => handleSourceSelect(dataset)}
                   style={{
-                    marginTop: 3,
-                    fontSize: '0.66rem',
-                    fontWeight: 700,
-                    padding: '1px 7px',
-                    borderRadius: '5px',
-                    background: vocabSource === 'imported' ? 'rgba(255, 255, 255, 0.28)' : 'var(--rose-dim)',
-                    color: vocabSource === 'imported' ? '#ffffff' : 'var(--rose)',
-                    border: vocabSource === 'imported' ? '1px solid rgba(255, 255, 255, 0.45)' : '1px solid rgba(225, 29, 72, 0.25)',
+                    padding: '12px 10px',
+                    borderRadius: '10px',
+                    border: vocabSource === dataset ? '1px solid var(--accent)' : '1px solid transparent',
+                    background: vocabSource === dataset ? 'linear-gradient(135deg, #f97316, #ea580c)' : '#ffffff',
+                    color: vocabSource === dataset ? '#ffffff' : 'var(--text-primary)',
+                    fontWeight: 800,
+                    fontSize: '0.85rem',
                     cursor: 'pointer',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: 4,
+                    boxShadow: vocabSource === dataset ? '0 4px 14px rgba(234, 88, 12, 0.35)' : '0 1px 3px rgba(0, 0, 0, 0.03)',
+                    transition: 'all 0.2s',
+                    position: 'relative',
+                    minWidth: 120,
                   }}
-                  title="Xóa bộ import này"
                 >
-                  Xóa bộ này
-                </span>
-              )}
-            </button>
+                  <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>{dataset}</span>
+                  <span style={{
+                    fontSize: '0.72rem',
+                    opacity: vocabSource === dataset ? 0.95 : 0.65,
+                    fontWeight: 700,
+                  }}>
+                    {mounted ? (datasetWordsCount > 0 ? `${datasetWordsCount} từ` : 'Chưa nạp từ') : '...'}
+                  </span>
+                  {mounted && isUnlocked && datasetWordsCount > 0 && (
+                    <span
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        sounds.playTap();
+                        setDatasetToDelete(dataset);
+                        setShowDeleteConfirm(true);
+                      }}
+                      style={{
+                        marginTop: 3,
+                        fontSize: '0.66rem',
+                        fontWeight: 700,
+                        padding: '1px 7px',
+                        borderRadius: '5px',
+                        background: vocabSource === dataset ? 'rgba(255, 255, 255, 0.28)' : 'var(--rose-dim)',
+                        color: vocabSource === dataset ? '#ffffff' : 'var(--rose)',
+                        border: vocabSource === dataset ? '1px solid rgba(255, 255, 255, 0.45)' : '1px solid rgba(225, 29, 72, 0.25)',
+                        cursor: 'pointer',
+                      }}
+                      title="Xóa bộ import này"
+                    >
+                      Xóa bộ này
+                    </span>
+                  )}
+                </button>
+              );
+            })}
 
             {/* Tab: Default Mimikara (sample 687 words) */}
             {!defaultDeleted && (
@@ -668,10 +687,12 @@ export default function HomePage() {
         <div className="modal-overlay" onClick={() => setShowDeleteConfirm(false)}>
           <div className="modal-sheet animate-scale-in" onClick={e => e.stopPropagation()} style={{ maxWidth: 440, textAlign: 'center', padding: '28px 24px' }}>
             <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: 8 }}>
-              Xác Nhận Xóa Bộ Import?
+              {datasetToDelete ? 'Xóa Bộ Từ Vựng?' : 'Xác Nhận Xóa Bộ Import?'}
             </h3>
             <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: 20 }}>
-              Bạn có chắc chắn muốn xóa toàn bộ <strong>{importedWords.length} từ vựng</strong> đã import?
+              {datasetToDelete
+                ? `Bạn có chắc chắn muốn xóa bộ từ vựng "${datasetToDelete}" không?`
+                : `Bạn có chắc chắn muốn xóa toàn bộ ${importedWords.length} từ vựng đã import?`}
             </p>
             <div style={{ display: 'flex', gap: 10 }}>
               <button

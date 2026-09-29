@@ -11,7 +11,7 @@ interface ImportedListModalProps {
 }
 
 export default function ImportedListModal({ onClose, onOpenImportNew }: ImportedListModalProps) {
-  const { activeWords, deleteWord, clearImported, setVocabSource, vocabSource, isUnlocked } = useVocabulary();
+  const { activeWords, deleteWord, clearImported, deleteDataset, setVocabSource, vocabSource, isUnlocked } = useVocabulary();
   const [search, setSearch] = useState('');
   const [selectedWord, setSelectedWord] = useState<VocabWord | null>(null);
 
@@ -235,11 +235,11 @@ export default function ImportedListModal({ onClose, onOpenImportNew }: Imported
             >
               Học bộ này ({activeWords.length} từ)
             </button>
-            {isUnlocked && vocabSource === 'imported' && (
+            {isUnlocked && vocabSource !== 'default' && vocabSource !== 'all' && (
               <button
                 onClick={() => {
-                  if (confirm('Bạn có chắc muốn xóa TẤT CẢ từ đã import? (Dữ liệu gốc 687 từ vẫn còn nguyên)')) {
-                    clearImported();
+                  if (confirm(`Bạn có chắc muốn xóa TẤT CẢ từ trong bộ "${vocabSource}"?`)) {
+                    deleteDataset(vocabSource);
                     sounds.playTap();
                   }
                 }}
@@ -252,7 +252,7 @@ export default function ImportedListModal({ onClose, onOpenImportNew }: Imported
                   fontWeight: 700,
                 }}
               >
-                Xóa tất cả từ import
+                Xóa bộ này
               </button>
             )}
           </div>
