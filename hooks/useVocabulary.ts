@@ -12,6 +12,7 @@ export function useVocabulary() {
   const [vocabSource, setVocabSourceState] = useLocalStorage<VocabSource>('active_vocab_source', 'default');
   const [defaultDeleted, setDefaultDeleted] = useLocalStorage<boolean>('default_vocab_deleted', false);
   const [deletedDefaultIds, setDeletedDefaultIds] = useLocalStorage<number[]>('deleted_default_ids', []);
+  const [isUnlocked, setIsUnlocked] = useLocalStorage<boolean>('delete_unlocked', false);
 
   const defaultWords = useMemo(() => {
     if (defaultDeleted) return [];
@@ -128,6 +129,8 @@ export function useVocabulary() {
     clearImported,
     deleteDefaultWords,
     restoreDefaultWords,
+    isUnlocked,
+    setIsUnlocked,
   };
 }
 

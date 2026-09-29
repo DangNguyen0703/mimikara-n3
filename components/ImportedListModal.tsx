@@ -11,7 +11,7 @@ interface ImportedListModalProps {
 }
 
 export default function ImportedListModal({ onClose, onOpenImportNew }: ImportedListModalProps) {
-  const { activeWords, deleteWord, clearImported, setVocabSource, vocabSource } = useVocabulary();
+  const { activeWords, deleteWord, clearImported, setVocabSource, vocabSource, isUnlocked } = useVocabulary();
   const [search, setSearch] = useState('');
   const [selectedWord, setSelectedWord] = useState<VocabWord | null>(null);
 
@@ -158,27 +158,29 @@ export default function ImportedListModal({ onClose, onOpenImportNew }: Imported
                         </svg>
                       </button>
 
-                      <button
-                        onClick={() => {
-                          if (confirm(`Xóa từ "${w.kanji}" khỏi danh sách?`)) {
-                            sounds.playTap();
-                            deleteWord(w.id);
-                          }
-                        }}
-                        style={{
-                          background: 'var(--rose-dim)',
-                          border: '1px solid rgba(225, 29, 72, 0.25)',
-                          color: 'var(--rose)',
-                          borderRadius: '8px',
-                          padding: '6px 10px',
-                          cursor: 'pointer',
-                          fontSize: '0.78rem',
-                          fontWeight: 700,
-                        }}
-                        title="Xóa từ này"
-                      >
-                        Xóa
-                      </button>
+                      {isUnlocked && (
+                        <button
+                          onClick={() => {
+                            if (confirm(`Xóa từ "${w.kanji}" khỏi danh sách?`)) {
+                              sounds.playTap();
+                              deleteWord(w.id);
+                            }
+                          }}
+                          style={{
+                            background: 'var(--rose-dim)',
+                            border: '1px solid rgba(225, 29, 72, 0.25)',
+                            color: 'var(--rose)',
+                            borderRadius: '8px',
+                            padding: '6px 10px',
+                            cursor: 'pointer',
+                            fontSize: '0.78rem',
+                            fontWeight: 700,
+                          }}
+                          title="Xóa từ này"
+                        >
+                          Xóa
+                        </button>
+                      )}
                     </div>
                   </div>
 
@@ -233,7 +235,7 @@ export default function ImportedListModal({ onClose, onOpenImportNew }: Imported
             >
               Học bộ này ({activeWords.length} từ)
             </button>
-            {vocabSource === 'imported' && (
+            {isUnlocked && vocabSource === 'imported' && (
               <button
                 onClick={() => {
                   if (confirm('Bạn có chắc muốn xóa TẤT CẢ từ đã import? (Dữ liệu gốc 687 từ vẫn còn nguyên)')) {

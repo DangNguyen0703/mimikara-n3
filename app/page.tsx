@@ -78,6 +78,8 @@ export default function HomePage() {
     restoreDefaultWords,
     limit,
     setLimit,
+    isUnlocked,
+    setIsUnlocked,
   } = useVocabulary();
 
   const { starred, wrong, forgettable } = useBookmarks();
@@ -115,6 +117,21 @@ export default function HomePage() {
     setVocabSource(defaultDeleted ? 'imported' : 'default');
     setShowDeleteConfirm(false);
     sounds.playTap();
+  };
+
+  const handleUnlock = () => {
+    sounds.playTap();
+    if (isUnlocked) {
+      setIsUnlocked(false);
+      return;
+    }
+    const pwd = prompt('Nhập mật khẩu để mở khóa tính năng xóa:');
+    if (pwd === '070304') {
+      setIsUnlocked(true);
+      alert('Đã mở khóa chức năng xóa!');
+    } else if (pwd !== null) {
+      alert('Mật khẩu không đúng!');
+    }
   };
 
   return (
@@ -292,8 +309,30 @@ export default function HomePage() {
                 {vocabSource === 'imported' ? 'Đang chọn: Bộ Import' : vocabSource === 'default' ? 'Đang chọn: Gốc Mimikara' : 'Đang chọn: Tất cả'}
               </span>
 
+              {/* Delete Lock Button */}
+              <button
+                onClick={handleUnlock}
+                style={{
+                  background: isUnlocked ? 'var(--emerald-dim)' : 'var(--bg-secondary)',
+                  border: isUnlocked ? '1px solid var(--emerald)' : '1px solid var(--border)',
+                  color: isUnlocked ? 'var(--emerald)' : 'var(--text-muted)',
+                  padding: '3px 10px',
+                  borderRadius: '8px',
+                  fontSize: '0.72rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  transition: 'all 0.15s',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 4,
+                }}
+                title={isUnlocked ? "Khóa lại" : "Mở khóa xóa"}
+              >
+                {isUnlocked ? '🔓 Đã mở khóa' : '🔒 Mở khóa xóa'}
+              </button>
+
               {/* Delete Default Sample (687 words) Button */}
-              {!defaultDeleted && (
+              {isUnlocked && !defaultDeleted && (
                 <button
                   onClick={() => setShowDeleteDefaultConfirm(true)}
                   style={{
@@ -309,12 +348,12 @@ export default function HomePage() {
                   }}
                   title="Xóa bộ mẫu gốc 687 từ"
                 >
-                  Xóa bộ gốc (687 từ)
+                  Xóa bộ gốc
                 </button>
               )}
 
               {/* Delete Imported Button with Confirmation */}
-              {importedWords.length > 0 && (
+              {isUnlocked && importedWords.length > 0 && (
                 <button
                   onClick={() => setShowDeleteConfirm(true)}
                   style={{
@@ -338,7 +377,7 @@ export default function HomePage() {
 
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
+            gridTemplateColumns: defaultDeleted ? '1fr' : 'repeat(3, 1fr)',
             gap: 8,
             background: 'var(--bg-secondary)',
             padding: 6,
@@ -374,7 +413,7 @@ export default function HomePage() {
               }}>
                 {mounted ? (importedWords.length > 0 ? `${importedWords.length} từ` : 'Chưa nạp từ') : '...'}
               </span>
-              {mounted && importedWords.length > 0 && (
+              {mounted && isUnlocked && importedWords.length > 0 && (
                 <span
                   onClick={(e) => {
                     e.stopPropagation();
@@ -400,61 +439,64 @@ export default function HomePage() {
             </button>
 
             {/* Tab: Default Mimikara (sample 687 words) */}
-            <button
-              onClick={() => handleSourceSelect('default')}
-              style={{
-                padding: '12px 10px',
-                borderRadius: '10px',
-                border: vocabSource === 'default' ? '1px solid var(--accent)' : '1px solid transparent',
-                background: vocabSource === 'default' ? 'linear-gradient(135deg, #f97316, #ea580c)' : '#ffffff',
-                color: vocabSource === 'default' ? '#ffffff' : 'var(--text-primary)',
-                fontWeight: 800,
-                fontSize: '0.85rem',
-                cursor: 'pointer',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: 4,
-                boxShadow: vocabSource === 'default' ? '0 4px 14px rgba(234, 88, 12, 0.35)' : '0 1px 3px rgba(0, 0, 0, 0.03)',
-                transition: 'all 0.2s',
-                position: 'relative',
-              }}
-            >
-              <span>Gốc Mimikara</span>
-              <span style={{
-                fontSize: '0.72rem',
-                opacity: vocabSource === 'default' ? 0.95 : 0.65,
-                fontWeight: 700,
-              }}>
-                {defaultDeleted ? 'Đã xóa (687 từ)' : '687 từ'}
-              </span>
-              {!defaultDeleted && (
-                <span
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    sounds.playTap();
-                    setShowDeleteDefaultConfirm(true);
-                  }}
-                  style={{
-                    marginTop: 3,
-                    fontSize: '0.66rem',
-                    fontWeight: 700,
-                    padding: '1px 7px',
-                    borderRadius: '5px',
-                    background: vocabSource === 'default' ? 'rgba(255, 255, 255, 0.28)' : 'var(--rose-dim)',
-                    color: vocabSource === 'default' ? '#ffffff' : 'var(--rose)',
-                    border: vocabSource === 'default' ? '1px solid rgba(255, 255, 255, 0.45)' : '1px solid rgba(225, 29, 72, 0.25)',
-                    cursor: 'pointer',
-                  }}
-                  title="Xóa bộ từ mẫu này"
-                >
-                  Xóa bộ gốc
+            {!defaultDeleted && (
+              <button
+                onClick={() => handleSourceSelect('default')}
+                style={{
+                  padding: '12px 10px',
+                  borderRadius: '10px',
+                  border: vocabSource === 'default' ? '1px solid var(--accent)' : '1px solid transparent',
+                  background: vocabSource === 'default' ? 'linear-gradient(135deg, #f97316, #ea580c)' : '#ffffff',
+                  color: vocabSource === 'default' ? '#ffffff' : 'var(--text-primary)',
+                  fontWeight: 800,
+                  fontSize: '0.85rem',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: 4,
+                  boxShadow: vocabSource === 'default' ? '0 4px 14px rgba(234, 88, 12, 0.35)' : '0 1px 3px rgba(0, 0, 0, 0.03)',
+                  transition: 'all 0.2s',
+                  position: 'relative',
+                }}
+              >
+                <span>Gốc Mimikara</span>
+                <span style={{
+                  fontSize: '0.72rem',
+                  opacity: vocabSource === 'default' ? 0.95 : 0.65,
+                  fontWeight: 700,
+                }}>
+                  {defaultDeleted ? 'Đã xóa (687 từ)' : '687 từ'}
                 </span>
-              )}
-            </button>
+                {isUnlocked && !defaultDeleted && (
+                  <span
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      sounds.playTap();
+                      setShowDeleteDefaultConfirm(true);
+                    }}
+                    style={{
+                      marginTop: 3,
+                      fontSize: '0.66rem',
+                      fontWeight: 700,
+                      padding: '1px 7px',
+                      borderRadius: '5px',
+                      background: vocabSource === 'default' ? 'rgba(255, 255, 255, 0.28)' : 'var(--rose-dim)',
+                      color: vocabSource === 'default' ? '#ffffff' : 'var(--rose)',
+                      border: vocabSource === 'default' ? '1px solid rgba(255, 255, 255, 0.45)' : '1px solid rgba(225, 29, 72, 0.25)',
+                      cursor: 'pointer',
+                    }}
+                    title="Xóa bộ từ mẫu này"
+                  >
+                    Xóa bộ gốc
+                  </span>
+                )}
+              </button>
+            )}
 
             {/* Tab: All Words Combined */}
-            <button
+            {!defaultDeleted && (
+              <button
               onClick={() => handleSourceSelect('all')}
               style={{
                 padding: '12px 10px',
