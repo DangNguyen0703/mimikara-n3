@@ -208,8 +208,8 @@ export default function HomePage() {
               )}
             </button>
 
-            {/* View Imported List Button */}
-            {mounted && importedWords.length > 0 ? (
+            {/* View Active List Button */}
+            {mounted && activeWords.length > 0 ? (
               <button
                 className="btn btn-secondary"
                 onClick={() => {
@@ -217,9 +217,9 @@ export default function HomePage() {
                   setShowImportedList(true);
                 }}
                 style={{ fontSize: '0.82rem', padding: '8px 14px', borderRadius: '9999px', borderColor: 'var(--accent)', flexShrink: 0 }}
-                title="Xem danh sách từ đã import"
+                title="Xem danh sách từ đang học"
               >
-                Kho từ ({importedWords.length})
+                Kho từ ({activeWords.length})
               </button>
             ) : null}
 
@@ -428,7 +428,7 @@ export default function HomePage() {
               }}>
                 {defaultDeleted ? 'Đã xóa (687 từ)' : '687 từ'}
               </span>
-              {!defaultDeleted ? (
+              {!defaultDeleted && (
                 <span
                   onClick={(e) => {
                     e.stopPropagation();
@@ -449,28 +449,6 @@ export default function HomePage() {
                   title="Xóa bộ từ mẫu này"
                 >
                   Xóa bộ gốc
-                </span>
-              ) : (
-                <span
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    sounds.playTap();
-                    restoreDefaultWords();
-                  }}
-                  style={{
-                    marginTop: 3,
-                    fontSize: '0.66rem',
-                    fontWeight: 700,
-                    padding: '1px 7px',
-                    borderRadius: '5px',
-                    background: 'var(--bg-secondary)',
-                    color: 'var(--accent-hover)',
-                    border: '1px solid var(--accent)',
-                    cursor: 'pointer',
-                  }}
-                  title="Khôi phục lại bộ mẫu gốc"
-                >
-                  Khôi phục
                 </span>
               )}
             </button>
@@ -680,7 +658,7 @@ export default function HomePage() {
               Xác Nhận Xóa Bộ Mẫu Gốc?
             </h3>
             <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: 20 }}>
-              Bạn có chắc chắn muốn xóa bộ từ vựng mẫu <strong>(687 từ)</strong>? Sau khi xóa, bạn sẽ tập trung hoàn toàn vào bộ từ vựng tùy chỉnh (880 từ) bạn nạp vào. Bạn có thể khôi phục lại bất kỳ lúc nào nếu cần.
+              Bạn có chắc chắn muốn xóa bộ từ vựng mẫu <strong>(687 từ)</strong>? Sau khi xóa, bạn sẽ tập trung hoàn toàn vào bộ từ vựng tùy chỉnh (880 từ) bạn nạp vào. Bạn <strong>sẽ không thể khôi phục lại</strong> bộ từ này trừ khi xóa dữ liệu trang web.
             </p>
             <div style={{ display: 'flex', gap: 10 }}>
               <button

@@ -11,11 +11,11 @@ interface ImportedListModalProps {
 }
 
 export default function ImportedListModal({ onClose, onOpenImportNew }: ImportedListModalProps) {
-  const { importedWords, deleteImportedWord, clearImported, setVocabSource } = useVocabulary();
+  const { activeWords, deleteWord, clearImported, setVocabSource, vocabSource } = useVocabulary();
   const [search, setSearch] = useState('');
   const [selectedWord, setSelectedWord] = useState<VocabWord | null>(null);
 
-  const filtered = importedWords.filter(w => {
+  const filtered = activeWords.filter(w => {
     const q = search.toLowerCase().trim();
     if (!q) return true;
     return (
@@ -33,10 +33,10 @@ export default function ImportedListModal({ onClose, onOpenImportNew }: Imported
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
           <div>
             <h2 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-primary)', lineHeight: 1.2 }}>
-              Kho Từ Vựng Đã Import
+              Kho Từ Vựng Đang Học
             </h2>
             <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-              {importedWords.length} từ vựng trong bộ nhớ trình duyệt
+              {activeWords.length} từ vựng trong bộ nhớ
             </p>
           </div>
           <button
@@ -83,7 +83,7 @@ export default function ImportedListModal({ onClose, onOpenImportNew }: Imported
 
         {/* Word List */}
         <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 8, paddingRight: 2, minHeight: 200, maxHeight: '55vh' }}>
-          {importedWords.length === 0 ? (
+          {activeWords.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '40px 10px', color: 'var(--text-muted)' }}>
               <p style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                 Chưa có từ vựng nào được import
@@ -160,9 +160,9 @@ export default function ImportedListModal({ onClose, onOpenImportNew }: Imported
 
                       <button
                         onClick={() => {
-                          if (confirm(`Xóa từ "${w.kanji}" khỏi danh sách import?`)) {
+                          if (confirm(`Xóa từ "${w.kanji}" khỏi danh sách?`)) {
                             sounds.playTap();
-                            deleteImportedWord(w.id);
+                            deleteWord(w.id);
                           }
                         }}
                         style={{
@@ -214,7 +214,7 @@ export default function ImportedListModal({ onClose, onOpenImportNew }: Imported
         </div>
 
         {/* Footer */}
-        {importedWords.length > 0 && (
+        {activeWords.length > 0 && (
           <div style={{
             marginTop: 14,
             paddingTop: 12,
@@ -228,30 +228,31 @@ export default function ImportedListModal({ onClose, onOpenImportNew }: Imported
               style={{ fontSize: '0.82rem', padding: '8px 16px', borderRadius: '9999px' }}
               onClick={() => {
                 sounds.playTap();
-                setVocabSource('imported');
                 onClose();
               }}
             >
-              Học bộ này ({importedWords.length} từ)
+              Học bộ này ({activeWords.length} từ)
             </button>
-            <button
-              onClick={() => {
-                if (confirm('Bạn có chắc muốn xóa TẤT CẢ từ đã import? (Dữ liệu gốc 687 từ vẫn còn nguyên)')) {
-                  clearImported();
-                  sounds.playTap();
-                }
-              }}
-              style={{
-                background: 'transparent',
-                border: 'none',
-                color: 'var(--rose)',
-                cursor: 'pointer',
-                fontSize: '0.78rem',
-                fontWeight: 700,
-              }}
-            >
-              Xóa tất cả từ import
-            </button>
+            {vocabSource === 'imported' && (
+              <button
+                onClick={() => {
+                  if (confirm('Bạn có chắc muốn xóa TẤT CẢ từ đã import? (Dữ liệu gốc 687 từ vẫn còn nguyên)')) {
+                    clearImported();
+                    sounds.playTap();
+                  }
+                }}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: 'var(--rose)',
+                  cursor: 'pointer',
+                  fontSize: '0.78rem',
+                  fontWeight: 700,
+                }}
+              >
+                Xóa tất cả từ import
+              </button>
+            )}
           </div>
         )}
       </div>

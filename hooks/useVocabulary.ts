@@ -11,10 +11,15 @@ export function useVocabulary() {
   const [importedWords, setImportedWords] = useLocalStorage<VocabWord[]>('imported_words', []);
   const [vocabSource, setVocabSourceState] = useLocalStorage<VocabSource>('active_vocab_source', 'default');
   const [defaultDeleted, setDefaultDeleted] = useLocalStorage<boolean>('default_vocab_deleted', false);
+  const [deletedDefaultIds, setDeletedDefaultIds] = useLocalStorage<number[]>('deleted_default_ids', []);
 
   const defaultWords = useMemo(() => {
-    return defaultDeleted ? [] : vocabulary;
-  }, [defaultDeleted]);
+    if (defaultDeleted) return [];
+    if (deletedDefaultIds.length > 0) {
+      return vocabulary.filter(w => !deletedDefaultIds.includes(w.id));
+    }
+    return vocabulary;
+  }, [defaultDeleted, deletedDefaultIds]);
 
   const allWords = useMemo(() => {
     return [...defaultWords, ...importedWords];
@@ -78,6 +83,16 @@ export function useVocabulary() {
     setImportedWords(prev => prev.filter(w => w.id !== id));
   }, [setImportedWords]);
 
+  const deleteDefaultWord = useCallback((id: number) => {
+    setDeletedDefaultIds(prev => [...prev, id]);
+  }, [setDeletedDefaultIds]);
+
+  const deleteWord = useCallback((id: number) => {
+    // Delete from both just in case
+    setImportedWords(prev => prev.filter(w => w.id !== id));
+    setDeletedDefaultIds(prev => [...new Set([...prev, id])]);
+  }, [setImportedWords, setDeletedDefaultIds]);
+
   const clearImported = useCallback(() => {
     setImportedWords([]);
     setVocabSourceState(defaultDeleted ? 'imported' : 'default');
@@ -108,6 +123,8 @@ export function useVocabulary() {
     lookupWord,
     addImportedWords,
     deleteImportedWord,
+    deleteDefaultWord,
+    deleteWord,
     clearImported,
     deleteDefaultWords,
     restoreDefaultWords,
